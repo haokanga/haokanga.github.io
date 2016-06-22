@@ -1,0 +1,212 @@
+---
+layout: post
+title:  "Java-HBase"
+date:   2016-2-28 21:50:56 +1030
+categories: Java
+tags: [Java, Linux]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<h4>What we get: big data files in CSV format</h4>
+<h4>What we need to do: load/scan data with HBase</h4>
+
+<br>
+
+<h4>Bash - Load Data</h4>
+{%highlight bash%}
+# Create HBase table
+# assume column family named 'data'
+create 'TABLE_NAME', 'data'
+
+# Create hadoop dir and put DATAFILE into it
+hadoop fs -mkdir hdfs://PRIVATE_IP_ADDR:9000/inputdata
+# the output dir must not exist
+hadoop fs -rmdir hdfs://PRIVATE_IP_ADDR:9000/importeddata
+hadoop fs -put DATAFILE.csv hdfs://PRIVATE_IP_ADDR:9000/inputdata
+hadoop fs -ls hdfs://PRIVATE_IP_ADDR:9000/
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.columns="HBASE_ROW_KEY,data:FIRST_COLUMN,...,data:LAST_COLUNM" -Dimporttsv.separator="," -Dimporttsv.bulk.output=hdfs://PRIVATE_IP_ADDR:9000/importeddata 'TABLE_NAME' hdfs://PRIVATE_IP_ADDR:9000/inputdata/DATAFILE.csv
+#-Dimporttsv.columns: HBASE_ROW_KEY and all the columns
+#-Dimporttsv.separator="," ',' as the separator, NOTE that the default separator is '\t', but you CANNOT use -Dimporttsv.separator="\t" because of the limitation of HBase Java API
+#-Dimporttsv.bulk.output: output dir
+#TABLE_NAME
+#DATAFILE_LOCATION
+
+#CompleteBulkLoad
+hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles hdfs://PRIVATE_IP_ADDR:9000/importeddata 'TABLE_NAME'
+
+#Now you can use scan 'TABLE_NAME' to check if u have succeeded
+SCAN scan 'TABLE_NAME'
+
+# if we need to drop it, we need to disable it first
+disable 'TABLE_NAME'
+drop 'TABLE_NAME'
+
+{%endhighlight%}
+
+<h4>Performance Improvement</h4>
+{%highlight bash%}
+# BLOOMFILTER
+# use bloom filter to improve search performance
+create 'TABLE_NAME', {NAME => 'data', BLOOMFILTER => 'ROW'}
+
+# USE GET instead of SCAN
+GET is O(logN) while SCAN is O(N)
+try to set tricky rowkey and just use GET to retrieve ur data!
+
+{%endhighlight%}
+<h4>Basic Structure</h4>
+{%highlight java%}
+public class HBaseTasksBlogVer {
+    private static String zkAddr = "PRIVATE_IP_ADDR_MASTER_NODE";
+    private static String tableName = "TABLE_NAME";
+    private static HTableInterface hbaseTable; // HTable handler.
+    private static HConnection conn;
+    private static byte[] bColFamily = Bytes.toBytes("data"); // Byte representation of column family.
+    private final static Logger logger = Logger.getRootLogger(); //logger
+    public static void main(String[] args) throws IOException {
+        initializeConnection();
+        switch (args[0]) {
+			//case here
+		}
+        terminateConnection();
+    }
+	
+	...
+}
+{%endhighlight%}
+<h4>Initialize Connection</h4>
+{%highlight java%}
+private static void initializeConnection() throws IOException {
+        // Remember to set correct log level to avoid unnecessary output.
+        logger.setLevel(Level.ERROR);
+        Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.master", zkAddr + ":60000");
+        conf.set("hbase.zookeeper.quorum", zkAddr);
+        conf.set("hbase.zookeeper.property.clientport", "2181");
+        if (!zkAddr.matches("\\d+.\\d+.\\d+.\\d+")) {
+            System.out.print("HBase not configured!");
+            return;
+        }
+        conn = HConnectionManager.createConnection(conf);
+        hbaseTable = conn.getTable(Bytes.toBytes(tableName));
+    }
+{%endhighlight%}
+
+<h4>Terminate Connection</h4>
+{%highlight java%}
+    private static void terminateConnection() throws IOException {
+        if (hbaseTable != null) {
+            hbaseTable.close();
+        }
+        if (conn != null) {
+            conn.close();
+        }
+    }
+{%endhighlight%}
+
+<h4>Get Query</h4>
+{%highlight java%}
+// SELECT FIELD_NAME FROM TABLE WHERE COL_PRIMARY_KEY = "KEYWORD"
+private static void get() throws IOException {
+        //GET must use ROW_KEY
+        byte[] bCol_ROW_KEY = Bytes.toBytes("QUERY_KEYWORD");
+        byte[] bCol_data = Bytes.toBytes("data");
+        Get get = new Get(bCol_ROW_KEY);
+        Result result = hbaseTable.get(get);
+        byte[] value = result.getValue(bColFamily, bCol_data);
+        String retrievedData = Bytes.toString(value);
+        ...
+    }
+{%endhighlight%}
+
+
+<h4>Scan Query</h4>
+{%highlight java%}
+// SELECT FIELD_NAME FROM TABLE WHERE FIELD_NAME LIKE "KEYWORD%"
+private static void scan() throws IOException {
+        Scan scan = new Scan();
+        byte[] bCol = Bytes.toBytes("COLUMN_NAME");
+        scan.addColumn(bColFamily, bCol);
+        RegexStringComparator comp = new RegexStringComparator("^KEYWORD.*");
+        Filter filter = new SingleColumnValueFilter(bColFamily, bCol, CompareFilter.CompareOp.EQUAL, comp);
+        scan.setFilter(filter);
+        ResultScanner rs = hbaseTable.getScanner(scan);
+        int count = 0;
+        for (Result r = rs.next(); r != null; r = rs.next()) {
+            count++;
+            System.out.println(Bytes.toString(r.getValue(bColFamily, bCol)));
+        }
+        rs.close();
+    }
+{%endhighlight%}
+
+
+<h4>Multi Filter</h4>
+Use FilterList
+{%highlight java%}
+private static void demo() throws IOException {
+        FilterList filterList = new FilterList();
+        filterList.addFilter(first_filter);
+        ...
+        filterList.addFilter(last_filter);
+        scan.setFilter(filterList);
+        ResultScanner rs = hbaseTable.getScanner(scan);
+        for (Result r = rs.next(); r != null; r = rs.next()) {
+            System.out.print(Bytes.toString(r.getValue(bColFamily, bCol_FIELD)));
+        }
+        System.out.println();
+        rs.close();
+    }
+{%endhighlight%}
+
+<h4>SingleColumnValueFilter + Regex</h4>
+{%highlight java%}
+//  CompareFilter.CompareOp.EQUAL/NOT_EQUAL to include/exclude by REGEX RegexStringComparator
+	...
+        RegexStringComparator comp = new RegexStringComparator("^KEYWORD.*");
+        Filter filter = new SingleColumnValueFilter(bColFamily, bCol, CompareFilter.CompareOp.EQUAL, comp);
+        scan.setFilter(filter);
+        ResultScanner rs = hbaseTable.getScanner(scan);
+        int count = 0;
+        for (Result r = rs.next(); r != null; r = rs.next()) {
+            count++;
+            System.out.println(Bytes.toString(r.getValue(bColFamily, bCol)));
+        }
+	...
+{%endhighlight%}
+
+<h4>SingleColumnValueFilter + Value</h4>
+Convert the value into Bytes<br> 
+e.g. for double format use Bytes.toBytes(1000.0);
+{%highlight java%}
+//  Year 2010 and onwards	
+	FilterList filterList = new FilterList(); 
+	byte[] bCol_year_value = Bytes.toBytes(2010); 
+	Filter filter_year = new SingleColumnValueFilter(bColFamily, bCol_year, CompareFilter.CompareOp.GREATER_OR_EQUAL, bCol_year_value);
+	filterList.addFilter(filter_year);
+	scan.setFilter(filterList);
+	ResultScanner rs = hbaseTable.getScanner(scan);
+	for (Result r = rs.next(); r != null; r = rs.next()) {
+		System.out.print(Bytes.toString(r.getValue(bColFamily, bCol_FIELD)));
+	}
+	System.out.println();
+	rs.close();
+{%endhighlight%}
+
+<h4>Reference</h4>
+<a href="http://hbase.apache.org/0.94/book/ops_mgt.html#importtsv">Apache HBase (TM) Operational Management</a>
+
+

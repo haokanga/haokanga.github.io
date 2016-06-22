@@ -1,0 +1,75 @@
+---
+layout: post
+title:  "C#-Keyboard Events-Modding in DuckGame"
+date:   2016-1-10 21:53:56 +1030
+categories: Modding
+tags: [CSharp, Modding]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+  Monitor player keyboard action to design more advanced items!<br>
+  We alway meet PRESS HOLD RELEASE "FIRE" button to control our weapon<br>
+  <table>
+  <tr><td>{% highlight C# %}OnPressAction(){% endhighlight %}</td><td>triggers when you PRESS "FIRE" button</td></tr>
+  <tr><td>{% highlight C# %}OnHoldAction(){% endhighlight %}</td><td>triggers when you HOLD "FIRE" button</td></tr>
+  <tr><td>{% highlight C# %}OnReleaseAction(){% endhighlight %}</td><td>triggers when you RELEASE "FIRE" button</td></tr>
+</table>
+<br>
+  wanna monitor other keys? Here is the trick.<br>
+  If the player press UP button (only the activity of PRESS, not HOLD or RELEASE)
+{% highlight C# %}
+if (Duck.inputProfile.Pressed("UP", false))
+{
+  ...
+}
+{% endhighlight %}
+<br>the button can be
+{% highlight C# %}
+"UP", "RIGHT", "DOWN", "LEFT", "JUMP",
+"LTRIGGER", "RAGDOLL", "STRAFE"
+"SHOOT" // not "fire"
+"GRAB"
+"QUACK"
+{% endhighlight %}
+<br>
+
+Updated version of <strong>PRESS HOLD RELEASE</strong> button table<br>
+<table>
+<tr><td>{% highlight C# %}duck.inputProfile.Pressed("DOWN", false){% endhighlight %}</td><td>triggers when you PRESS button</td></tr>
+<tr><td>{% highlight C# %}this._equippedDuck.inputProfile.Down("LEFT"){% endhighlight %}</td><td>triggers when you HOLD button
+{% highlight C# %}
+this._equippedDuck
+{% endhighlight %}
+get the owner(Duck) of this equipment
+</td></tr>
+<tr><td>{% highlight C# %}
+if (this.inputProfile.Released("QUACK"))
+{
+this.quack = 0;
+}
+{% endhighlight %}</td><td>triggers when you RELEASE button</td></tr>
+</table>
+Notice the object must be {% highlight C# %}Duck{% endhighlight %}.
+<br>
+and the result is a <strong>bool</strong> value.
+<br>
+Reference
+<em>decompiled C# code of DuckGame.exe</em>
+
+
+
+
+</body>
+</html>

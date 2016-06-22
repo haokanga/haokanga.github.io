@@ -1,0 +1,46 @@
+--- 
+layout: post 
+title: "Java-Sort Map By Value Gracefully" 
+date: 2016-5-16 19:30:56 +1030 
+categories: Java 
+tags: [Java] 
+---
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>    
+    <h4>Introduction</h4>
+    <p>Sometimes we love to store our key-vale pairs into a map, and we want to sort the map both by key and by value. I believe you will fall in love with <code>TreeMap.navigableKeySet()</code>(ascending) and <code>TreeMap.descendingKeySet()</code>, but how to get entrySet by value?
+
+    <h4>Implementation</h4>
+    Make best use of  <code>Collections.sort()</code>. The idea is learnt from <a href="http://www.mkyong.com/java/how-to-sort-a-map-in-java/">mkyong - How to sort a Map in Java</a>.
+
+    <h4>Show me the code</h4>
+    {%highlight java%}
+TreeMap<K, V> treeMap = new TreeMap<K, V>();
+LinkedList<Entry<K, V>> linkedList = new LinkedList<Entry<K, V>>(treeMap.entrySet());
+Collections.sort(linkedList, new Comparator<Entry<K, V>>() {
+    public int compare(Entry<K, V> thisEntry, Entry<K, V> thatEntry) {
+        //by value in descending order
+        int cmp = -thisEntry.getValue().compareTo(thatEntry.getValue());
+        if (cmp != 0)
+            return cmp;
+        //break value tie by key in ascending order
+        else
+            return thisEntry.getKey().compareTo(thatEntry.getKey());
+    }
+});
+
+for (Entry<K, V> entry : linkedList) {
+    // play with entry.getKey() and entry.getValue()
+}
+    {%endhighlight%}
+    Cheers!
+    <h4>Reference</h4>
+    <a href="http://www.mkyong.com/java/how-to-sort-a-map-in-java/"><em>mkyong - How to sort a Map in Java</em></a>
+</body>
+
+</html>

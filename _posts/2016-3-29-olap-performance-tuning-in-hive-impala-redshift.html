@@ -1,0 +1,147 @@
+---
+layout: post
+title:  "OLAP-Performance Tuning in Hive, Impala & Redshift"
+date:   2016-3-29 23:50:56 +1030
+categories: Java
+tags: [Java]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<h4>What we get: big data files compressed in .gz stored in S3 bucket</h4>
+<h4>What we need to do: create table, run complex queries and optimize performance</h4>
+<br>
+<h3>Hive</h3>
+<h4>Run EMR cluster with Hive </h4>
+{%highlight bash%}
+AMI Version: 3.11.0
+Termination Protection: Yes
+Applications to be installed: Hive 0.13.1, Impala 1.2.4
+Security Group: allows traffic to ports 10000 and 21050 (just use AllInAllOut for a unsound but lazy solution)
+{%endhighlight%}
+
+<h4>Hive Create Table Example (From pre-organized data in s3 bucket)</h4>
+{%highlight sql%}
+CREATE EXTERNAL TABLE table_demo (
+	col_key INT, 
+	col_1 STRING, 
+	col_2 STRING, 
+    ...
+	col_n STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+LOCATION 's3://yours3bucket/subfolder/table_demo/';
+{%endhighlight%}
+
+<h4>Hive Query Example</h4>
+Note that these queries are also compatible with Impala & Redshift, thanks to the standardization in SQL!
+{%highlight sql%}
+select sum(this_col_m * this_col_n) as some_alias from table_this, table_that 
+where this_foreignkey=that_candidatekey 
+and this_col_a=1234567 
+and this_col_b between 123 and 456 
+and this_col_c < 123;
+
+describe table_demo;
+drop table table_demo;
+{%endhighlight%}
+
+Just a bite of Hive, let us dive into Impala and Redshift in which optimization is much more vital.
+
+<h4>Impala Create Table Example (From pre-organized data in s3 bucket)</h4>
+Exactly the same as Hive code, wow!
+
+<h4></h4>
+AWS Documentation » Amazon Elastic MapReduce Documentation » Developer Guide » Impala
+http://docs.aws.amazon.com/ElasticMapReduce/latest/DeveloperGuide/emr-impala.html
+
+<h4>Optimizing Impala</h4>
+{%highlight sql%}
+There are 3 most powerful tricks:
+--Partitioning
+--"Tables that are always or almost always queried with conditions on the partitioning columns. In our example of a table partitioned by year, SELECT COUNT(*) FROM school_records WHERE year = 1985 is efficient, only examining a small fraction of the data; but SELECT COUNT(*) FROM school_records has to process a separate data file for each year, resulting in more overall work than in an unpartitioned table. You would probably not partition this way if you frequently queried the table based on last name, student ID, and so on without testing the year."
+
+--File Format: Parquet
+--File Format Support in Impala: Parquet, Text, Avro, RCFile, SequenceFile
+--Text is the default and most unoptimized format. Avro, RCFile, SequenceFile do not support INSERT, only (1) LOAD DATA files in the right format or (2) INSERT in Hive is possible. To conclude, Parquet is the best choice
+
+--Join ordering
+    --Join ordering affects Impala performance. For best results:
+--Join the BIGGEST table first.
+--Join subsequent tables according to which table has the MOST selective filter. Joining the table with the most selective filter results in the fewest number of rows being returned.
+{%endhighlight%}
+
+<h4>Optimizing Redshift</h4>
+{%highlight bash%}
+# Optimize Redshift’s table design
+Redshift’s query planner is capable of processing and optimizing complex queries. Unlike some systems, the order of joins and conditions in the query does not have to be optimized by the user (such as Impala). Instead, the table design needs to be a optimized for the queries that will be run against it.
+
+#Sort Key
+Redshift stores your data on disk in sorted order according to the sort key. How your data is sorted has an important effect on disk I/O, columnar compression, and query performance. Each database block contains metadata, called a Zone Map that describes the range of sortkey values within that block. Redshift uses the zone map to skip blocks that cannot satisfy a filter in a query’s WHERE clause.
+
+# Best practices
+Small tables are often best sorted by their primary key
+"FILTER COLUMN"[PRIMARY CHOICE]: If you do frequent RANGE filtering or EQUALITY filtering on one column, specify that column as the sort key.
+"JOIN COLUMN"[SECOND BEST CHOICE]: If you frequently join a table and don’t have a better choice for the sort key, specify the join column.
+If recent data is queried most frequently, specify the TIMESTAMP column as the leading column for the sort key.
+
+#Distribution Style
+KEY, ALL, or EVEN.
+EVEN(default and naive type): [Sharding] round-robin distribution. Appropriate when a table does NOT get involved in JOIN (which means it does NOT suit Star Schema!) 
+ALL: [Replication]
+KEY: [Sharding]
+
+#Dist Keys
+The distkey of a table is the key used by the KEY diststyle when sharding the table's rows among the slices. Dist keys should be chosen using these principles:
+Co-locate the rows from commonly joined tables
+When the rows for joining columns are on the same slices, less data needs to be moved during query execution.
+Distribute data evenly among the slices in a cluster.
+If data is distributed evenly, the workload can be allocated evenly to all the slices.
+{%endhighlight%}
+
+<h4>Specifying Sort Keys, Distribution Styles, and Distkeys</h4>
+{%highlight sql%}
+CREATE TABLE table_demo (
+col_key integer not null sortkey distkey,
+col_1 varchar(19) not null,
+col_2 varchar(10) not null,
+col_3 integer not null);
+ 
+CREATE TABLE table_demo (
+col_key integer not null sortkey,
+col_1 varchar(19) not null,
+col_2 varchar(10) not null,
+col_3 integer not null
+) diststyle all;
+
+CREATE TABLE table_demo (
+col_key integer not null distkey,
+col_1 varchar(19) not null,
+col_2 varchar(10) not null,
+col_3 integer not null,
+) compound sortkey (d_year, d_month); 
+}
+{%endhighlight%}
+
+
+<h4>Reference</h4>
+<a href="http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_partitioning.html#partitioning">Impala 1.2.4 documentation - Partitioning</a><br>
+<a href="http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_file_formats.html#file_formats">Impala 1.2.4 documentation - How Impala Works with Hadoop File Formats</a><br>
+<a href="http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_langref_sql.html?scroll=create_table_unique_1">Impala 1.2.4 documentation - SQL Statements</a><br>
+<a href="http://www.cloudera.com/documentation/archive/impala/1-x/1-0-1/Installing-and-Using-Impala/ciiu_langref_sql.html#hints_unique_1">Impala SQL Language Elements</a><br>
+<a href="http://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables-sort-keys.html">AWS Documentation » Amazon Redshift » Developer Guide » Tutorial: Tuning Table Design » Step 3: Select Sort Keys</a><br>
+<a href="http://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables-distribution.html">AWS Documentation » Amazon Redshift » Developer Guide » Tutorial: Tuning Table Design » Step 4: Select Distribution Styles</a>
+
+</body>
+</html>
+

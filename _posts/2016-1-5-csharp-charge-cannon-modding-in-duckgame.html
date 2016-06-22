@@ -1,0 +1,821 @@
+---
+layout: post
+title:  "C#-Charge Cannon-Modding in DuckGame"
+date:   2016-1-5 16:33:56 +1030
+categories: Modding
+tags: [CSharp, Modding]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+  <br>
+  <img class="alignnone size-full wp-image-52" src="https://cmudream.files.wordpress.com/2015/12/sc1-620x.jpg" alt="SC1-620x" width="620" height="349" />
+  <a href="http://store.steampowered.com/app/312530/">Duck Game</a>--Frenetic and comical rounds in a multiplayer arena with ducks... wearing hats and quacking. <br>
+  <br>Time to make something really Quack!
+
+  Charge Cannon, stems from <a href="https://www.youtube.com/watch?v=Q3StnkJKODc">Loose Cannon</a> in Team Fortress 2:
+  <table>
+    <tr><td>Shoots explosive cannon balls on a fuse;</td></tr>
+    <tr><td>charge to reduce fuse time/create larger radius of incendiary area;</td></tr>
+    <tr><td>overcharge will lead to explosion and suicide;</td></tr>
+    <tr><td>knocks back ducks when hit, or it explode immediately with perfect charge (double-donk);</td></tr>
+    <tr><td>needs time to reload after shooting, a reloaded sound "shotgunload" to indicate that it has been reloaded;</td></tr>
+    <tr><td>charging sound to indicate the charging progress</td></tr>
+
+  </table>
+  <br>
+  Fire:<br>
+  <img class="alignnone size-full wp-image-58" src="https://cmudream.files.wordpress.com/2015/12/donkcannon.png" alt="donkcannon" width="669" height="265" />
+  Overcharge and you just explode yourself into the sky!<br>
+  <img class="alignnone size-full wp-image-59" src="https://cmudream.files.wordpress.com/2015/12/donkcannonovercharge.png" alt="donkcannonovercharge" width="443" height="216" />
+  <br>Perfect charge, perfect shoot! DOUBLE QUACK!<br>
+  <img class="alignnone size-full wp-image-57" src="https://cmudream.files.wordpress.com/2015/12/doubledonk.png" alt="doubledonk" width="408" height="155" />
+  <br>
+  Shoot explosive cannonball on a fuse<br>
+  We need both a cannon and a cannonball<br>
+  {% highlight C# %}
+    using DuckGame;
+    using System;
+    namespace DuckGame.yourmod
+    {
+        [EditorGroup("yourmod|guns")]
+        public class DonkCannon : Gun
+        {
+          ...
+          public DonkCannon(float xval, float yval) : base(xval, yval)
+          {
+            ...
+          }
+          ...
+        }
+
+        public class Cannonball : Gun
+        {
+            ...
+            public Cannonball(float xval, float yval) : base(xval, yval)
+            {
+              ...
+            }
+            ...
+        }
+    }
+  {% endhighlight %}
+  The cannonball is just like a grenade right?<br>
+  Get the code of Grenade.cs from ILSpy, easy!<br>
+  then modify it:
+  {% highlight C# %}
+    public class Cannonball : Gun
+    {
+        ...
+
+        public Cannonball(float xval, float yval) : base(xval, yval)
+        {
+            ...
+            //change the sprite of cannonball into cannon_ball_projectile.png
+            this._sprite = new SpriteMap(GetPath("sprites/cannon_ball_projectile.png"), 11, 11, false);
+            base.graphic = this._sprite;
+            this.center = new Vec2(5.5f, 5.5f);
+            this.collisionOffset = new Vec2(-4f, -4f);
+            this.collisionSize = new Vec2(8f, 8f);
+            base.bouncy = 0.4f;
+            this.friction = 0.05f;
+            this._editorName = "Cannonball";
+            this._bio = "Cannonball can hit, cannonball can explode, cannonbal can ignite and lead to easy code. -- MagicalAndor";
+
+        }
+        ...
+        public override void Initialize()
+        {
+            this.gr = Cannonball.cannonball;
+            Cannonball.cannonball++;
+        }
+        ...
+    }
+  {% endhighlight %}
+  how to shoot a cannonball when you press FIRE button?
+  like this:
+  {% highlight C# %}
+    //override the default activity (shoot an ammo of yourammotype) in fire()
+    public override void Fire()
+       {
+       }
+
+    //and create your own
+    //Add a cannonball in Level when you release FIRE buton
+    public override void OnReleaseAction() //note that it is not OnPressAction() since we need to implement "charge", so it fires when you release your finger
+       {
+           if (ammo > 0 && this._wait == 0f)
+           {
+               ammo--;
+               ApplyKick();
+               Vec2 vec2 = Offset(barrelOffset);
+               if (!receivingPress)
+               {
+                   if (this.isServerForObject)
+                   {
+                       //Add a cannonball in Level(the map in game) in the position of your weapon barrel
+                   }
+               }
+           }
+       }
+  {% endhighlight %}
+  A fuse?<br>
+  use OnHoldAction() to track your charge time and calculate the related values! (Fuse time, power, ...)
+  {% highlight C# %}
+    public override void OnHoldAction()
+        {
+            if (this.ammo > 0 && this._wait == 0f)
+            {
+                if (this._countdown == 1f) //start charge
+                {
+                    this._chargeSound.Volume = 1f;
+                    this._chargeSound.Play();
+                }
+
+
+                if (this._countdown < maxchargetime * 1.5f)
+                {
+                    _countdown += 1f;
+                }
+                else { //overcharge
+                    CreateExplosion(position.x, position.y);
+                    GenerateSmoke(this.x, this.y, _countdown);
+                    _countdown = 0;
+                }
+            }
+        }
+  {% endhighlight %}
+  <br>Remember to declare these values:{% highlight C# %}
+    public class DonkCannon : Gun
+    {
+
+        public StateBinding _countdownState = new StateBinding("_countdown", -1, false);
+        public StateBinding maxchargetimeState = new StateBinding("maxchargetime", -1, false);
+        public float _countdown = 0f; //charge time
+        public float maxchargetime = 120f; //max charge time
+        private Sound _chargeSound; //charge sound
+        private Cannonball cannonball; //the cannonball
+        public DonkCannon(float xval, float yval) : base(xval, yval)
+        {...
+        }
+    }
+  {% endhighlight %}
+  <br>{% highlight C# %}this._chargeSound.Play();{% endhighlight %} is for charge sound, we need to set the sound in Initialize()
+  {% highlight C# %}
+    public override void Initialize()
+        {
+            base.Initialize();
+            this._chargeSound = SFX.Get("laserCharge", 0f, 0f, 0f, false);
+        }
+  {% endhighlight %}
+  <br>Now when you hold/release FIRE button, there is a charge time to decide all the cases and calculate the values of variables for the cannonball:<br>
+  <br>there are a lot of details in the following part.
+  {% highlight C# %}
+    public override void OnReleaseAction()
+       {
+           if (ammo > 0 && this._wait == 0f)
+           {
+               ammo--;
+               ApplyKick();
+               Vec2 vec2 = Offset(barrelOffset);
+               if (!receivingPress)
+               {
+                   if (this.isServerForObject)
+                   {
+                       cannonball = new Cannonball(vec2.x+barrelVector.x*2f, vec2.y-5f);
+                       Level.Add(cannonball);
+                       base.Fondle(cannonball);
+
+                       if (owner != null)
+                       {
+                           responsibleProfile = owner.responsibleProfile;
+                       }
+                       cannonball.clip.Add(owner as MaterialThing);
+                       cannonball._pin = false;
+                       // semi-fixed shooting power and distance
+                       cannonball.hSpeed = (barrelVector.x * 9f) + (barrelVector.x * 3f) * (float)Math.Pow((this._countdown / maxchargetime), 1); ;
+                       cannonball.vSpeed = -(2f) - (2/3f) * (float)Math.Pow((this._countdown / maxchargetime), 1); ;
+                       cannonball.gravMultiplier = 0.8f;
+                       // charge to reduce fuse time
+                       cannonball._timer = 3.0f;
+                       if (this._countdown < maxchargetime * 2 / 3)
+                       {
+                           cannonball._timer *= (1 - (float)Math.Pow((this._countdown / maxchargetime), 1));
+                       }
+                       else
+                       {
+                           cannonball._timer *= Math.Min((1 - (float)Math.Pow((this._countdown / (maxchargetime*1.5f)), 1)), 0.15f);
+                       }
+
+                       // charge to create larger radius of incendiary area
+                       cannonball.incendiaryRadius = 7f * (float)Math.Pow((this._countdown / maxchargetime), 1);
+                       //3 different sound effect indicate different shooting power
+                       if (this._countdown < maxchargetime * 1 / 3)
+                       {
+                           SFX.Play("slip", 1f, 0f, 0f, false);
+                       }
+                       else if (this._countdown < maxchargetime * 2 / 3)
+                       {
+                           SFX.Play(GetPath("sounds/M79.wav"), 1f, 0f, 0f, false);
+                       }
+                       else {
+                           SFX.Play(GetPath("sounds/M202.wav"), 1f, 0f, 0f, false);
+                           SFX.Play("quackYell03", 1f, 0f, 0f, false);
+                       }
+                       GenerateSmoke(this.x, this.y, _countdown);
+                       //jobs done, reset all the values and prepare for the next shoot
+                       this._countdown = 0;
+                       this._wait = this._fireWait;
+                       this.loaded = false;
+                       this._chargeSound.Stop();
+                       this._chargeSound.Volume = 0f;
+                   }
+               }
+           }
+
+       }
+  {% endhighlight %}
+  <br>
+  implement incendiary part, generate smoke is the same:<br>
+  {% highlight C# %}
+    public class Cannonball : Gun
+    {
+      ...
+      public StateBinding incendiaryRadiusBinding = new StateBinding("incendiaryRadius", -1, false);
+      ...
+    public Cannonball(float xval, float yval) : base(xval, yval)
+    {
+        ...
+    }
+    public void CreateExplosion(Vec2 pos)
+        {
+            if (!this._explosionCreated)
+            {
+                float x = pos.x;
+                float num = pos.y - 2f;
+                Level.Add(new ExplosionPart(x, num, true));
+                int num2 = 6;
+                if (Graphics.effectsLevel < 2)
+                {
+                    num2 = 3;
+                }
+                for (int i = 0; i < num2; i++)
+                {
+                    float deg = (float)i * 60f + Rando.Float(-10f, 10f);
+                    float num3 = Rando.Float(12f, 20f);
+                    ExplosionPart thing = new ExplosionPart(x + (float)(System.Math.Cos((double)Maths.DegToRad(deg)) * (double)num3), num - (float)(System.Math.Sin((double)Maths.DegToRad(deg)) * (double)num3), true);
+                    Level.Add(thing);
+                }
+                this._explosionCreated = true;
+                SFX.Play("explode", 1f, 0f, 0f, false);
+                FireExplosion((int)(3f + incendiaryRadius));
+            }
+        }
+    public virtual void FireExplosion(int fireAmount)
+    {
+        for (int i = 0; i < fireAmount; i++)
+        {
+            float speed = Rando.Float(0f, 3f);
+
+            Level.Add(SmallFire.New(x, y - 2f, Rando.Float(-speed, speed), Rando.Float(-speed, speed + 2f), false, (MaterialThing)null, true, (Thing)this, false));
+        }
+    }
+}
+  {% endhighlight %}
+  <br>now finish the reload part
+  modify Update() for DonkCannon:
+  {% highlight C# %}
+    // override Update to finish "reloaded" Sound Effect
+        public override void Update()
+        {
+            base.Update();//this is important (it implements the firewait timer), you can explore this in ILSpy
+            if ((this._wait == 0f) && (this.loaded == false))
+            {
+                SFX.Play("shotgunLoad", 1f, 0f, 0f, false);
+                this.loaded = true;
+            }
+        }
+  {% endhighlight %}
+  <br>When you run out of ammo:
+  {% highlight C# %}
+    public override void OnPressAction()
+        {
+            if ((ammo == 0) && (this.owner != null))
+            {
+                SFX.Play("happyQuack01", 1f, Rando.Float(-0.1f, 0.1f), 0f, false);
+            }
+
+        }
+  {% endhighlight %}
+
+
+
+
+
+
+
+
+
+
+  <br>Full code:
+  {% highlight C# %}
+  using DuckGame;
+using System;
+
+namespace DuckGame.DuckGamePlus
+{
+    [EditorGroup("DuckGame+|guns")]
+    /*
+    Functions finished:
+    Shoots explosive cannon balls on a fuse
+    knocks back ducks when hit, or it explode immediately with perfect charge (double-donk)
+    semi-fixed range
+    can be charged to reduce fuse time/create larger radius of incendiary area
+    overcharge will lead to explosion and suicide
+    needs time to reload after shooting, a reloaded sound "shotgunload" to indicate that it has been reloaded
+    charging sound to indicate the charging progress
+    3 different sound effect indicate the shooting power
+    */
+
+    public class DonkCannon : Gun
+    {
+
+        public StateBinding _countdownState = new StateBinding("_countDown", -1, false);
+        public StateBinding maxchargetimeState = new StateBinding("_maxChargeTime", -1, false);
+        public StateBinding _netPreachBinding = new NetSoundBinding("_netPreach");
+        public StateBinding _netQuackYell03Binding = new NetSoundBinding("_netQuackYell03");
+        public StateBinding _netHappyQuack01Binding = new NetSoundBinding("_netHappyQuack01");
+        public NetSoundEffect _netQuackYell03 = new NetSoundEffect(new string[]
+        {
+            "quackYell03"
+        });
+        public NetSoundEffect _netHappyQuack01 = new NetSoundEffect(new string[]
+        {
+            "happyQuack01"
+        });
+        public float _countDown = 0f;
+        public float _maxChargeTime = 120f;
+        private Sound _chargeSound;
+        private Cannonball cannonball;
+        public DonkCannon(float xval, float yval) : base(xval, yval)
+        {
+            _editorName = "Donk Cannon";
+            ammo = 8;
+            _ammoType = new ATLaser();
+            _ammoType.range = 0f;
+            _fireSound = "smg";
+            _fullAuto = true;
+            _fireWait = 10f; //fixed cooldown of firing
+
+            _wait = 0f;
+            _kickForce = 3f;
+            //change the sprite of cannongun into cannon_ball_launcher.png
+            graphic = new SpriteMap(GetPath("sprites/cannon_ball_launcher.png"), 30, 13, false);
+            collisionSize = new Vec2(30f, 13f);
+            center = new Vec2(15f, 6.5f);
+
+            collisionOffset = new Vec2(-8f, -4f);
+            _barrelOffsetTL = new Vec2(15f, 13f);
+            this.loaded = true;
+
+        }
+        public override void Initialize()
+        {
+            base.Initialize();
+            this._chargeSound = SFX.Get("laserCharge", 0f, 0f, 0f, false);
+        }
+        public override void OnPressAction()
+        {
+            if ((ammo == 0) && (this.owner != null))
+            {
+                if (Network.isActive)
+                {
+                    this._netHappyQuack01.Play(1f, 0f);
+                }
+                else
+                {
+                    SFX.Play("happyQuack01", 1f, 0.2f, 0f, false);
+                }
+            }
+
+        }
+
+        public override void OnHoldAction()
+        {
+            if (this.ammo > 0 && this._wait == 0f)
+            {
+                if (this._countDown == 1f)
+                {
+                    this._chargeSound.Volume = 1f;
+                    this._chargeSound.Play();
+                }
+
+
+                if (this._countDown < _maxChargeTime * 1.5f)
+                {
+                    _countDown += 1f;
+                }
+                else {
+                    CreateExplosion(position.x, position.y);
+                    GenerateSmoke(this.x, this.y, _countDown);
+                    _countDown = 0;
+                }
+            }
+        }
+        public override void OnReleaseAction()
+        {
+            this.Fire();
+        }
+        public void GenerateSmoke(float x, float y, float chargetime)
+        {
+            float smokeRate = (float)Math.Pow((chargetime / _maxChargeTime), 2);
+            for (int i = 0; i < 25f * smokeRate; i++)
+            {
+                Level.Add(SmallSmoke.New(x + Rando.Float(-8f, 8f), y + Rando.Float(-8f, 8f)));
+            }
+        }
+        public override void Fire()
+        {
+            if (ammo > 0 && this._wait == 0f)
+            {
+                ammo--;
+                ApplyKick();
+                Vec2 vec2 = Offset(barrelOffset);
+                if (!receivingPress)
+                {
+                    if (this.isServerForObject)
+                    {
+                        cannonball = new Cannonball(vec2.x + barrelVector.x * 2f, vec2.y - 5f);
+                        Level.Add(cannonball);
+                        base.Fondle(cannonball);
+
+                        if (owner != null)
+                        {
+                            responsibleProfile = owner.responsibleProfile;
+                        }
+                        cannonball.clip.Add(owner as MaterialThing);
+                        cannonball._pin = false;
+                        // semi-fixed shooting power and distance
+                        //cannonball.hSpeed = (barrelVector.x * 10f) * (float)Math.Pow((this._countdown / maxchargetime), 1);
+                        //cannonball.vSpeed = -(5f) * (float)Math.Pow((this._countdown / maxchargetime), 1);
+                        cannonball.hSpeed = (barrelVector.x * 9f) + (barrelVector.x * 3f) * (float)Math.Pow((this._countDown / _maxChargeTime), 1);
+                        cannonball.vSpeed = -(2f) - (2 / 3f) * (float)Math.Pow((this._countDown / _maxChargeTime), 1);
+                        cannonball.gravMultiplier = 0.8f;
+                        // charge to reduce fuse time
+                        cannonball._timer = 3.0f;
+                        if (this._countDown < _maxChargeTime * 2 / 3)
+                        {
+                            cannonball._timer *= (1 - (float)Math.Pow((this._countDown / _maxChargeTime), 1));
+                        }
+                        else
+                        {
+                            cannonball._timer *= Math.Min((1 - (float)Math.Pow((this._countDown / (_maxChargeTime * 1.5f)), 1)), 0.15f);
+                        }
+
+                        // charge to create larger radius of incendiary area
+                        cannonball.incendiaryRadius = 7f * (float)Math.Pow((this._countDown / _maxChargeTime), 1);
+                        //3 different sound effect indicate different shooting power
+                        if (this._countDown < _maxChargeTime * 1 / 3)
+                        {
+                            SFX.Play("slip", 1f, 0f, 0f, false);
+                        }
+                        else if (this._countDown < _maxChargeTime * 2 / 3)
+                        {
+                            SFX.Play(GetPath("sounds/M79.wav"), 1f, 0f, 0f, false);
+                        }
+                        else {
+                            SFX.Play(GetPath("sounds/M202.wav"), 1f, 0f, 0f, false);
+                            if (Network.isActive)
+                            {
+                                this._netQuackYell03.Play(1f, 0f);
+                            }
+                            else
+                            {
+                                SFX.Play("quackYell03", 1f, Rando.Float(-0.1f, 0.1f), 0f, false);
+                            }
+                        }
+                        GenerateSmoke(this.x, this.y, _countDown);
+                        this._countDown = 0;
+                        this._wait = this._fireWait;
+                        this.loaded = false;
+                        this._chargeSound.Stop();
+                        this._chargeSound.Volume = 0f;
+
+
+                    }
+                }
+            }
+        }
+        private void CreateExplosion(float x, float y)
+        {
+            Vec2 vec2 = Offset(barrelOffset);
+            cannonball = new Cannonball(vec2.x, vec2.y - 2f);
+            Level.Add(cannonball);
+            base.Fondle(cannonball);
+            if (owner != null)
+            {
+                responsibleProfile = owner.responsibleProfile;
+            }
+            cannonball.clip.Add(owner as MaterialThing);
+            cannonball.incendiaryRadius = 7f * 1.5f;
+            cannonball._pin = false;
+            cannonball._timer = 0f;
+
+        }
+        // override Update to finish "reloaded" Sound Effect
+        public override void Update()
+        {
+            base.Update();
+            if ((this._wait == 0f) && (this.loaded == false))
+            {
+                SFX.Play("shotgunLoad", 1f, 0f, 0f, false);
+                this.loaded = true;
+            }
+        }
+    }
+
+    public class Cannonball : Gun
+    {
+        public StateBinding _timerBinding = new StateBinding("_timer", -1, false);
+
+        public StateBinding _pinBinding = new StateBinding("_pin", -1, false);
+
+        public StateBinding incendiaryRadiusBinding = new StateBinding("incendiaryRadius", -1, false);
+
+        private SpriteMap _sprite;
+
+        public bool _pin = true;
+
+        public float _timer = 1.2f;
+
+        private Duck _cookThrower;
+
+        private float _cookTimeOnThrow;
+
+        public bool pullOnImpact;
+
+        private bool _explosionCreated;
+
+        private bool _localDidExplode;
+
+        private bool _didBonus;
+
+        private static int cannonball;
+
+        public int gr;
+
+        public int _explodeFrames = -1;
+
+        public float incendiaryRadius = 0f;
+
+        public Duck cookThrower
+        {
+            get
+            {
+                return this._cookThrower;
+            }
+        }
+
+        public float cookTimeOnThrow
+        {
+            get
+            {
+                return this._cookTimeOnThrow;
+            }
+        }
+
+        public Cannonball(float xval, float yval) : base(xval, yval)
+        {
+            this.ammo = 1;
+            this._ammoType = new ATShrapnel();
+            this._ammoType.penetration = 0.4f;
+            this._type = "gun";
+            //change the sprite of cannonball into cannon_ball_projectile.png            
+            this._sprite = new SpriteMap(GetPath("sprites/cannon_ball_projectile.png"), 11, 11, false);
+            base.graphic = this._sprite;
+            this.center = new Vec2(5.5f, 5.5f);
+            this.collisionOffset = new Vec2(-4f, -4f);
+            this.collisionSize = new Vec2(8f, 8f);
+
+            base.bouncy = 0.4f;
+            this.friction = 0.05f;
+            this._editorName = "Cannonball";
+            this._bio = "Cannonball can hit, cannonball can explode, cannonbal can ignite and lead to easy code. -- MagicalAndor";
+
+        }
+
+        public override void Initialize()
+        {
+            this.gr = Cannonball.cannonball;
+            Cannonball.cannonball++;
+        }
+
+        public override void OnNetworkBulletsFired(Vec2 pos)
+        {
+            this._pin = false;
+            this._localDidExplode = true;
+            if (!this._explosionCreated)
+            {
+                Graphics.flashAdd = 1.3f;
+                Layer.Game.darken = 1.3f;
+            }
+            this.CreateExplosion(pos);
+        }
+
+        public void CreateExplosion(Vec2 pos)
+        {
+            if (!this._explosionCreated)
+            {
+                float x = pos.x;
+                float num = pos.y - 2f;
+                Level.Add(new ExplosionPart(x, num, true));
+                int num2 = 6;
+                if (Graphics.effectsLevel < 2)
+                {
+                    num2 = 3;
+                }
+                for (int i = 0; i < num2; i++)
+                {
+                    float deg = (float)i * 60f + Rando.Float(-10f, 10f);
+                    float num3 = Rando.Float(12f, 20f);
+                    ExplosionPart thing = new ExplosionPart(x + (float)(System.Math.Cos((double)Maths.DegToRad(deg)) * (double)num3), num - (float)(System.Math.Sin((double)Maths.DegToRad(deg)) * (double)num3), true);
+                    Level.Add(thing);
+                }
+                this._explosionCreated = true;
+                SFX.Play("explode", 1f, 0f, 0f, false);
+                FireExplosion((int)(3f + incendiaryRadius));
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (!this._pin)
+            {
+                this._timer -= 0.01f;
+            }
+            if (this._timer < 0.5f && this.owner == null && !this._didBonus)
+            {
+                this._didBonus = true;
+                if (Recorder.currentRecording != null)
+                {
+                    Recorder.currentRecording.LogBonus();
+                }
+            }
+            if (!this._localDidExplode && this._timer <= 0f)
+            {
+                if (this._explodeFrames < 0)
+                {
+                    this.CreateExplosion(this.position);
+                    this._explodeFrames = 4;
+                }
+                else
+                {
+                    this._explodeFrames--;
+                    if (this._explodeFrames == 0)
+                    {
+                        float x = base.x;
+                        float num = base.y - 2f;
+                        Graphics.flashAdd = 1.3f;
+                        Layer.Game.darken = 1.3f;
+                        if (base.isServerForObject)
+                        {
+                            for (int i = 0; i < 20; i++)
+                            {
+                                float num2 = (float)i * 18f - 5f + Rando.Float(10f);
+                                ATShrapnel aTShrapnel = new ATShrapnel();
+                                aTShrapnel.range = 60f + Rando.Float(18f);
+                                Bullet bullet = new Bullet(x + (float)(System.Math.Cos((double)Maths.DegToRad(num2)) * 6.0), num - (float)(System.Math.Sin((double)Maths.DegToRad(num2)) * 6.0), aTShrapnel, num2, null, false, -1f, false, true);
+                                bullet.firedFrom = this;
+                                this.firedBullets.Add(bullet);
+                                Level.Add(bullet);
+                            }
+                            System.Collections.Generic.IEnumerable<Window> enumerable = Level.CheckCircleAll<Window>(this.position, 40f);
+                            foreach (Window current in enumerable)
+                            {
+                                if (Level.CheckLine<Block>(this.position, current.position, current) == null)
+                                {
+                                    current.Destroy(new DTImpact(this));
+                                }
+                            }
+                            this.bulletFireIndex += 20;
+                            if (Network.isActive)
+                            {
+                                NMFireGun msg = new NMFireGun(this, this.firedBullets, this.bulletFireIndex, false, 4, false);
+                                Send.Message(msg, NetMessagePriority.ReliableOrdered, null);
+                                this.firedBullets.Clear();
+                            }
+                        }
+                        Level.Remove(this);
+                        base._destroyed = true;
+                        this._explodeFrames = -1;
+                    }
+                }
+            }
+            if (base.prevOwner != null && this._cookThrower == null)
+            {
+                this._cookThrower = (base.prevOwner as Duck);
+                this._cookTimeOnThrow = this._timer;
+            }
+            this._sprite.frame = (this._pin ? 0 : 0);
+        }
+
+        public override void OnSolidImpact(MaterialThing with, ImpactedFrom from)
+        {
+            if (this.pullOnImpact)
+            {
+                this.OnPressAction();
+            }
+            base.OnSolidImpact(with, from);
+        }
+        public override void OnSoftImpact(MaterialThing with, ImpactedFrom from)
+        {
+            //double donk
+            if (((with as Duck != null) || (with as TrappedDuck != null)) && this.incendiaryRadius >= 7f * 2 / 3)
+            {
+                this._timer = 0f;
+                if (this._explodeFrames == 0)
+                {
+                    float x = base.x;
+                    float num = base.y - 2f;
+                    Graphics.flashAdd = 1.3f;
+                    Layer.Game.darken = 1.3f;
+                    if (base.isServerForObject)
+                    {
+                        for (int i = 0; i < 20; i++)
+                        {
+                            float num2 = (float)i * 18f - 5f + Rando.Float(10f);
+                            ATShrapnel aTShrapnel = new ATShrapnel();
+                            aTShrapnel.range = 60f + Rando.Float(18f);
+                            Bullet bullet = new Bullet(x + (float)(System.Math.Cos((double)Maths.DegToRad(num2)) * 6.0), num - (float)(System.Math.Sin((double)Maths.DegToRad(num2)) * 6.0), aTShrapnel, num2, null, false, -1f, false, true);
+                            bullet.firedFrom = this;
+                            this.firedBullets.Add(bullet);
+                            Level.Add(bullet);
+                        }
+                        System.Collections.Generic.IEnumerable<Window> enumerable = Level.CheckCircleAll<Window>(this.position, 40f);
+                        foreach (Window current in enumerable)
+                        {
+                            if (Level.CheckLine<Block>(this.position, current.position, current) == null)
+                            {
+                                current.Destroy(new DTImpact(this));
+                            }
+                        }
+                        this.bulletFireIndex += 20;
+                        if (Network.isActive)
+                        {
+                            NMFireGun msg = new NMFireGun(this, this.firedBullets, this.bulletFireIndex, false, 4, false);
+                            Send.Message(msg, NetMessagePriority.ReliableOrdered, null);
+                            this.firedBullets.Clear();
+                        }
+                    }
+                    Level.Remove(this);
+                }
+
+                base.OnSoftImpact(with, from);
+            }
+        }
+
+        public override void OnPressAction()
+        {
+            if (this._pin)
+            {
+                this._pin = false;
+                Level.Add(new GrenadePin(base.x, base.y)
+                {
+                    hSpeed = (float)(-(float)this.offDir) * (1.5f + Rando.Float(0.5f)),
+                    vSpeed = -2f
+                });
+                SFX.Play("pullPin", 1f, 0f, 0f, false);
+            }
+        }
+
+        public virtual void FireExplosion(int fireAmount)
+        {
+            for (int i = 0; i < fireAmount; i++)
+            {
+                float speed = Rando.Float(0f, 3f);
+
+                Level.Add(SmallFire.New(x, y - 2f, Rando.Float(-speed, speed), Rando.Float(-speed, speed + 2f), false, (MaterialThing)null, true, (Thing)this, false));
+            }
+        }
+    }
+}
+{% endhighlight %}
+
+   You have made a QUACK delicate and powerful weapon in Duck Game!<br>
+	Reference
+  <em>decompiled C# code of DuckGame.exe</em>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+---
+layout: post
+title:  "C#-MyQuack Cookbook!-Modding in DuckGame"
+date:   2016-1-1 23:13:56 +1030
+categories: Modding
+tags: [CSharp, Modding]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+  <br>
+  <img class="alignnone size-full wp-image-52" src="https://cmudream.files.wordpress.com/2015/12/sc1-620x.jpg" alt="SC1-620x" width="620" height="349" />
+  <a href="http://store.steampowered.com/app/312530/">Duck Game</a>--Frenetic and comical rounds in a multiplayer arena with ducks... wearing hats and quacking. <br>
+  Welcome to Duck Game! Quack!<br>  
+  The following content is notes during my mod development for <a href="http://steamcommunity.com/app/312530/discussions/0/492379439683643613/">DuckGame+</a>. All the explanation is based on my personal understanding and thus some of them may be not that accurate, while most of them can offer you a help when you get in DuckGame Modding world.
+  <br>
+  <br>Important variables for weapons are as folows:
+  <table>
+  <tr><th>Variable & Sample Value</th><th>Description</th></tr>
+  <tr><td>{% highlight C# %}_editorName = "Donk Cannon";{% endhighlight %}</td><td>the name in map editor</td></tr>
+  <tr><td>{% highlight C# %}ammo = 8;{% endhighlight %}</td><td>ammo num</td></tr>
+  <tr><td>{% highlight C# %}_ammoType = new ATLaser();{% endhighlight %}</td><td>ammo type, check all the "AT%()" in ILSpy and get the ammo type you want or design ur own</td></tr>
+  <tr><td>{% highlight C# %}_ammoType.range = 0f;{% endhighlight %}</td><td>set fire range, here is 0 cause we can also use another way to "fire"</td></tr>
+  <tr><td>{% highlight C# %}_fireSound = "smg";{% endhighlight %}</td><td>if you wanna use customed sound, put the file into "/sounds" file, and use SFX.Play(GetPath("sounds/yoursound.wav"), 1f, 0f, 0f, false);</td></tr>
+  <tr><td>{% highlight C# %}_fullAuto = true;{% endhighlight %}</td><td></td></tr>
+  <tr><td>{% highlight C# %}_fireWait = 10f;{% endhighlight %}</td><td>fixed cooldown of firing, it will be used in Update(), we will discuss how to implement it in following posts</td></tr>
+  <tr><td>{% highlight C# %}_wait = 0f;{% endhighlight %}</td><td>an argument supporting _firewait</td></tr>
+  <tr><td>{% highlight C# %}_kickForce = 3f;{% endhighlight %}</td><td></td></tr>
+  <tr><td>{% highlight C# %}graphic = new SpriteMap(GetPath("sprites/cannon_ball_launcher.png"), 30, 13, false);{% endhighlight %}</td><td>the image/sprite of weapon</td></tr>
+  <tr><td>{% highlight C# %}collisionSize = new Vec2(30f, 13f);{% endhighlight %}</td>
+    <td style="background-color:#eee;" >note that the x,y equals the value in SpriteMap() sometimes
+    <br><img class="alignnone size-full wp-image-55" src="https://cmudream.files.wordpress.com/2015/12/pokeball.png" alt="pokeball" width="18" height="18" /><br>
+
+    if the sprite has white Padding you need to reduce these difference <br><img class="alignnone size-full wp-image-56" src="https://cmudream.files.wordpress.com/2015/12/dueling_shotgun.png" alt="dueling_shotgun" width="32" height="32" />
+    this pic is 32*32 but the code goes like this:
+    {% highlight C# %}
+    base.graphic = new SpriteMap(GetPath("sprites/dueling_shotgun.png"), 32, 32, false);
+    this.center = new Vec2(11f, 16f);
+    this.collisionOffset = new Vec2(-12f, -3f);
+    this.collisionSize = new Vec2(16f, 8f);
+  {% endhighlight %}
+            </td></tr>
+  <tr><td>{% highlight C# %}center = new Vec2(15f, 6.5f); {% endhighlight %}</td><td>half the values of graphic sometimes, or modified values given the difference of center </td></tr>
+  </table>
+  <br>Important variables/methods for bullets/objects/ducks are as folows:
+  <table>
+    <tr><th>Variable/Method & Sample Value</th><th>Description</th></tr>
+    <tr><td>{% highlight C# %}this.position = current.position;{% endhighlight %}</td><td>postion, Vec2(x,y) type</td></tr>
+    <tr><td>{% highlight C# %}this.hSpeed = (barrelVector.x * 10f);{% endhighlight %}</td><td>barrelVector.x means the current horizontal direction you face</td></tr>
+    <tr><td>{% highlight C# %}this.vSpeed = -(5f);{% endhighlight %}</td><td>vertical speed, note that negative value (&lt;0) means UP</td></tr>
+    <tr><td>{% highlight C# %}this.gravMultiplier = 0;{% endhighlight %}</td><td>gravity multiplier</td></tr>
+    <tr><td>{% highlight C# %}Duck.runMax = 4.5f;{% endhighlight %}</td><td>running speed of duck</td></tr>
+    <tr><td>{% highlight C# %}Duck.immobilized = true;{% endhighlight %}</td><td>cannot move</td></tr>
+    <tr><td>{% highlight C# %}Duck.visible = true;{% endhighlight %}</td><td>visible</td></tr>
+    <tr><td>{% highlight C# %}Duck.ThrowItem(false);{% endhighlight %}</td><td>throw item, use true to throw it with power</td></tr>
+  </table>
+  Suppose you want to make this object stop just like stuck into the wall:
+  {% highlight C# %}
+this.hSpeed = 0;
+this.vSpeed = 0;
+this.gravMultiplier = 0;
+  {% endhighlight %}
+<br>
+  Important methods you may need to override are as follows:
+  <table>
+  <tr><th>Method</th><th>Description</th></tr>
+  <tr><td style="min-width:200px">{% highlight C# %}OnPressAction(){% endhighlight %}</td><td>triggers when you press Fire button</td></tr>
+  <tr><td>{% highlight C# %}OnHoldAction(){% endhighlight %}</td><td>triggers when you hold Fire button</td></tr>
+  <tr><td>{% highlight C# %}OnReleaseAction(){% endhighlight %}</td><td>triggers when you release Fire button</td></tr>
+  <tr><td>{% highlight C# %}Fire(){% endhighlight %}</td><td>fire activity</td></tr>
+  <tr><td>{% highlight C# %}Initialize(){% endhighlight %}</td><td>Initialize once when created</td></tr>
+  <tr><td>{% highlight C# %}Update(){% endhighlight %}</td><td>triggers continuously as long as this weapon exists as if there is an internal timer, it triggers per 1/60s. I speculate that this game is 60FPS and Update() triggers per frame. </td></tr>
+  </table>
+  Handy methods you may need:
+  <table>
+  <tr><th>Method</th><th>Description</th></tr>
+  <tr><td>{% highlight C# %}SFX.Play(GetPath("sounds/M202.wav"), 1f, 0f, 0f, false);{% endhighlight %}</td><td>Sound Effect</td></tr>
+  <tr><td>{% highlight C# %}Level.Add(SmallSmoke.New(x + Rando.Float(-8f, 8f), y + Rando.Float(-8f, 8f)));{% endhighlight %}</td><td>Generate SmallSmoke (semi-transparent smoke) <br>Note that the random values represents for the random position of one unit of smoke, not the volume of smoke, if you want make more smoke, you need this:
+    {% highlight C# %}for (int i = 0; i < smokeNum; i++)
+            {
+                Level.Add(SmallSmoke.New(x + Rando.Float(-8f, 8f), y + Rando.Float(-8f, 8f)));
+            }{% endhighlight %}</td></tr>
+  <tr><td>{% highlight C# %}MusketSmoke musketSmoke = new MusketSmoke(base.x - 16f + Rando.Float(32f) + (float)this.offDir * 10f, base.y - 16f + Rando.Float(32f));{% endhighlight %}</td><td>Generate MusketSmoke (a dense smoke which blocks visibility)</td></tr>
+  <tr><td>{% highlight C# %}"Level.CheckCircleAll&lt;Thing&gt;(this.position, 1f).Count&lt;Thing&gt;(){% endhighlight %}</td><td>count nums of "Things" within a circle with "1f" radius</td></tr>
+
+  </table>
+  
+	Reference
+  <em>decompiled C# code of DuckGame.exe</em>
+</body>
+</html>

@@ -1,0 +1,107 @@
+---
+layout: post
+title:  "Java-Head First MongoDB"
+date:   2016-3-22 23:50:56 +1030
+categories: Java
+tags: [Java]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<h4>What we get: a JSON data file</h4>
+<h4>What we need to do: create table and retrieve data</h4>
+<br>
+<h4>Configure a MongoDB AMI</h4>
+{%highlight bash%}
+# Launch an EC2 instance
+Ubuntu Server 14.04 LTS (HVM), SSD Volume Type - ami-fce3c696
+ssh into it
+# Install MongoDB
+sudo su
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+apt-get update
+apt-get install -y mongodb-org
+service mongod start
+service mongod stop
+service mongod restart
+{%endhighlight%}
+
+<h4>MongoDB shell, <a href="https://docs.mongodb.org/manual/mongo/">read more</a></h4>
+{%highlight bash%}
+# As long as Mongo Demon(mongod) is running
+mongo
+{%endhighlight%}
+
+<h4>Creating and using a database</h4>
+{%highlight bash%}
+SFTP posts.json to /home/ubuntu
+use DATABASE_NAME
+{%endhighlight%}
+it works like this:
+{%highlight sql%}
+CREATE DATABASE IF NOT EXISTS DATABASE_NAME;
+USE DATABASE_NAME;
+{%endhighlight%}
+
+<h4>Import Data into MongoDB</h4>
+{%highlight bash%}
+SFTP posts.json to /home/ubuntu
+mongoexport --db DATABASE_NAME --collection COLLECTION_NAME --out posts.json
+{%endhighlight%}
+
+
+<h4>Specifying Sort Keys, Distribution Styles, and Distkeys</h4>
+Return all the posts by one user, sort the posts by Timestamp in ascending order
+{%highlight java%}
+//you need to add org.json.simple into your Maven Project 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
+        MongoClient mongoClient = new MongoClient("localhost");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase("DATABASE_NAME");
+        String id = request.getParameter("id");
+        JSONObject result = new JSONObject();
+        JSONArray posts = new JSONArray();
+        JSONParser parser = new JSONParser();
+        MongoCursor<Document> cursor = mongoDatabase.getCollection("COLLECTION_NAME").find(new Document("uid", Integer.parseInt(id))).sort(new Document("timestamp", 1)).iterator();
+        try {
+            while (cursor.hasNext()) {
+                try {
+                    JSONObject document = (JSONObject) parser.parse(cursor.next().toJson());
+                    document.remove("_id");
+                    posts.add(document);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+        result.put("posts", posts);
+        PrintWriter writer = response.getWriter();
+        writer.write(String.format("returnRes(%s)", result.toString()));
+        writer.close();
+        mongoClient.close();
+    }
+{%endhighlight%}
+
+
+<h4>Reference</h4>
+<a href="https://docs.mongodb.org/manual/mongo/">The mongo Shell</a><br>
+
+</body>
+</html>
+

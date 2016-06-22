@@ -1,0 +1,90 @@
+---
+layout: post
+title:  "Java-Multithreading with ReadWriteLock"
+date:   2016-3-5 14:50:56 +1030
+categories: Java
+tags: [Java]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<h4>Interface: ReadWriteLock</h4>
+<h4>Implementing Classes: ReentrantReadWriteLock</h4>
+It consists of a pair of associated locks.<br>
+As long as there are no <strong>WRITERs</strong>, you can have multiple <strong>REARDERs</strong>. It improves performance compared to a mutual exclustion lock.
+<br>
+The basic usage of ReentrantReadWriteLock goes like this:<br>
+Clean and Neat. Enjoy simple life with Java!<br>
+
+{%highlight java%}
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class YourMultiThreadClient {
+	// [WARNING] set "true" for FAIR-MODE which means FIFO, it is important for distributed K,V stores design
+	// [PRINCIPLE]Strict Ordering
+    private final static ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+
+	...
+
+    public static ... writeTask(...) {
+		...
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                lock.writeLock().lock();
+                try {
+                    ...//your write task
+                    }
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            }
+        });
+        t.start();
+    }
+
+    public static ... readTask(...) {
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                lock.readLock().lock();
+                try {
+                    ...//your read task
+                } finally {
+                    lock.readLock().unlock();
+                }
+            }
+        });
+        t.start();
+
+    }
+
+}
+
+{%endhighlight%}
+
+With the trick of these, you can easily design neat Replication/Sharding Coordinators for multi data stores.
+{%highlight java%}
+private HashMap<String, ReentrantReadWriteLock> replicationKeyLockHashMap = new HashMap<String, ReentrantReadWriteLock>();
+//While a write request is being fulfilled for a key, no other requests for that key can be done for any datastore until the pending request is completed. Control for each key should be managed separately, so operations for two different keys should proceed unhindered by each other.
+
+private static ReentrantReadWriteLock[] shardingKeyLockArray = new ReentrantReadWriteLock[NUM_OF_DATASTORE]; // use HashCode for even distribution
+{%endhighlight%}
+
+<h4>Reference</h4>
+<a href="https://examples.javacodegeeks.com/core-java/util/concurrent/locks-concurrent/readwritelock/java-readwritelock-example/">JavaCodeGeeks - Java ReadWriteLock Example</a><br>
+<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReadWriteLock.html">Java Doc - Interface ReadWriteLock</a>
+
+</body>
+</html>

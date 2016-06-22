@@ -1,0 +1,125 @@
+--- 
+layout: post 
+title: "Java-Split String Faster Than String.split()" 
+date: 2016-5-23 18:50:56 +1030 
+categories: Java 
+tags: [Java] 
+---
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>    
+    <h4>Introduction</h4>
+    <p>In our programming life, we always need to split strings with delimiters. <code>String.split(String regex)</code> is the most intuitive choice and it is sweet when we use regex based split, e.g.<code>.split("\\s+")</code> , but should we always use it regardless of scenarios? I'm afraid not. <code>String.split(String regex)</code> can be bad especially when performance matters. e.g. when you build a high-performance server or running EMR jobs.</p> We can note that String.split receives a <code>regex</code> argument but we may just need a <code>char</code> as the delimiter.
+    <p>There are many arguments on the internet about this topic (e.g. <a href="http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java">Stack Overflow - Performance of StringTokenizer class vs. split method in Java</a>), and many programmers prove that <code>String.split()</code> is more flexible thus but efficient than <code>StringTokenizer</code>.
+    <code>StringTokenizer</code> is faster than <code>String.split()</code>, but it is not convenient to retrieve the splited result:
+    {%highlight java%}
+// snippet in word count EMR sample
+while (stringTokenizer.hasMoreTokens()) {
+        String word = stringTokenizer.nextToken();
+        System.out.println(word + "\t" + "1");
+    }
+    {%endhighlight%}
+    <h4>Implementation</h4>
+    But there is still hope, <code>indexOf</code> is even faster than <code>StringTokenizer</code> since it is more strict.</p> Be cautious to design your split function, why not explore the implementation of <code>String.split(String regex)</code> and learn from it?
+    {%highlight java%}
+public String[] split(String regex, int limit) {
+    /* fastpath if the regex is a
+     (1)one-char String and this character is not one of the
+        RegEx's meta characters ".$|()[{^?*+\\", or
+     (2)two-char String and the first char is the backslash and
+        the second is not the ascii digit or ascii letter.
+     */
+    char ch = 0;
+    if (((regex.value.length == 1 &&
+         ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+         (regex.length() == 2 &&
+          regex.charAt(0) == '\\' &&
+          (((ch = regex.charAt(1))-'0')|('9'-ch)) < 0 &&
+          ((ch-'a')|('z'-ch)) < 0 &&
+          ((ch-'A')|('Z'-ch)) < 0)) &&
+        (ch < Character.MIN_HIGH_SURROGATE ||
+         ch > Character.MAX_LOW_SURROGATE))
+    {
+        int off = 0;
+        int next = 0;
+        boolean limited = limit > 0;
+        ArrayList<String> list = new ArrayList<>();
+        while ((next = indexOf(ch, off)) != -1) {
+            if (!limited || list.size() < limit - 1) {
+                list.add(substring(off, next));
+                off = next + 1;
+            } else {    // last one
+                //assert (list.size() == limit - 1);
+                list.add(substring(off, value.length));
+                off = value.length;
+                break;
+            }
+        }
+        // If no match was found, return this
+        if (off == 0)
+            return new String[]{this};
+
+        // Add remaining segment
+        if (!limited || list.size() < limit)
+            list.add(substring(off, value.length));
+
+        // Construct result
+        int resultSize = list.size();
+        if (limit == 0)
+            while (resultSize > 0 && list.get(resultSize - 1).length() == 0)
+                resultSize--;
+        String[] result = new String[resultSize];
+        return list.subList(0, resultSize).toArray(result);
+    }
+    return Pattern.compile(regex).split(this, limit);
+}
+    {%endhighlight%}
+    <h4>Show me the code</h4>
+    <p>switch <code>string regex</code> into <code>char delimiter</code> and regard <code>limit</code> as <code>0</code>. then restruct the code: </p>
+    {%highlight java%}
+private static String[] fastSplit(String string, char delimiter) {
+    /*
+     *  fastpath of String.split()
+     *  
+     *  [NOTE]
+     *  it will remove empty token in the end
+     *  it will not remove in-between empty tokens
+     *  the same behavior as String.split(String regex)
+     *  
+     *  [EXAMPLE]
+     *  string = "boo\tboo\tboo\t\t\tboo\t\t\t\t\t";
+     *  strings = fastSplit(string, '\t') -> [boo, boo, boo, , , boo]
+     */
+    int off = 0;
+    int next = 0;
+    ArrayList<String> list = new ArrayList<>();
+    while ((next = string.indexOf(delimiter, off)) != -1) {
+        list.add(string.substring(off, next));
+        off = next + 1;
+    }
+    // If no match was found, return this
+    if (off == 0)
+        return new String[] { string };
+
+    // Add remaining segment
+    list.add(string.substring(off, string.length()));
+
+    // Construct result
+    int resultSize = list.size();
+    while (resultSize > 0 && list.get(resultSize - 1).length() == 0)
+        resultSize--;
+    String[] result = new String[resultSize];
+    return list.subList(0, resultSize).toArray(result);
+}
+    {%endhighlight%}
+    Now, our life is more efficient and joyful with a faster split function!
+    <h4>Reference</h4>
+    <code>String[] split(String regex, int limit)</code> in <code>String.class</code>, Java 7<br>
+    <a href="http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java"><em>Stack Overflow - Performance of StringTokenizer class vs. split method in Java</em></a>
+</body>
+
+</html>

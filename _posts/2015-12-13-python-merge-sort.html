@@ -1,0 +1,116 @@
+---
+layout: post
+title:  "Python--Merge Sort"
+date:   2015-12-13 23:13:56 +1030
+categories: Algorithms Sorting
+tags: [Algorithms, Sorting, Python]
+---
+<!DOCTYPE html>
+<html>
+<body>
+
+  <a href="https://cmudream.files.wordpress.com/2015/10/merge-sort-example-300px.gif"><img class="alignnone size-full wp-image-11" src="https://cmudream.files.wordpress.com/2015/10/merge-sort-example-300px.gif" alt="Merge-sort-example-300px" width="300" height="180" /></a>
+  <ul>
+  	<li>Algorithm:Merge sort</li>
+  	<li>Best Time Complexity:O(n log(n))</li>
+  	<li>Average Time Complexity:O(n log(n))</li>
+  	<li>Worst Time Complexity:O(n log(n))</li>
+  	<li>Worst Space Complexity:O(n)</li>
+  </ul>
+  KEY IDEA: Divide-and-Conquer method<br><br>
+  Two modified version:
+  <br>Merge Sort while put all the zero in the end
+  {% highlight python %}
+  '''
+  Created on Oct 31, 2015
+
+  @author: Marshall
+  '''
+  def mergeSort(nums):
+      print("Splitting ",nums)
+      if len(nums)>1:
+          mid = len(nums)//2
+          lefthalf = nums[:mid]
+          righthalf = nums[mid:]
+
+          mergeSort(lefthalf)
+          mergeSort(righthalf)
+
+          i=0
+          j=0
+          k=0
+          while i < len(lefthalf) and j < len(righthalf):
+              if lefthalf[i] == 0 : # if 0:
+                      nums[k]=lefthalf[i] # choose smaller
+                      i=i+1 # next one to compare
+
+                  else:
+                      nums[k]=righthalf[j] # choose 0
+                      j=j+1 # next one to compare
+
+              else: #if >=
+                  if righthalf[j]!=0:
+                      nums[k]=righthalf[j] # choose smaller
+                      j=j+1 # next one to compare
+                  else:
+                      nums[k]=lefthalf[i] # choose 0
+                      i=i+1 # next one to compare
+              k=k+1
+
+          while i < len(lefthalf):
+              nums[k]=lefthalf[i]
+              i=i+1
+              k=k+1
+
+          while j < len(righthalf):
+              nums[k]=righthalf[j]
+              j=j+1
+              k=k+1
+      print("Merging ",nums)
+  {% endhighlight %}
+  Put all the zero in the end and remain the order of non-zero elements
+  This is much better than intuitive zero moving based on selection/bubble sort
+  {% highlight python %}'''
+  Created on Oct 31, 2015
+
+  @author: Marshall
+  '''
+  def mergeSort(nums):
+      print("Splitting ",nums)
+      if len(nums)>1:
+          mid = len(nums)//2
+          lefthalf = nums[:mid]
+          righthalf = nums[mid:]
+
+          mergeSort(lefthalf)
+          mergeSort(righthalf)
+
+          i=0
+          j=0
+          k=0
+          while i < len(lefthalf) and j < len(righthalf):
+              if lefthalf[i] !=0 :
+                  nums[k]=lefthalf[i]
+                  i=i+1
+              else:
+                  nums[k]=righthalf[j]
+                  j=j+1
+              k=k+1
+
+          while i < len(lefthalf):
+              nums[k]=lefthalf[i]
+              i=i+1
+              k=k+1
+
+          while j < len(righthalf):
+              nums[k]=righthalf[j]
+              j=j+1
+              k=k+1
+      print("Merging ",nums)
+{% endhighlight %}
+  Reference
+  <em>Problem Solving with Algorithms and Data Structures</em>
+  http://interactivepython.org/runestone/static/pythonds/SortSearch/TheMergeSort.html
+
+</body>
+</html>

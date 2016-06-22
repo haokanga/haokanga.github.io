@@ -1,0 +1,104 @@
+---
+layout: post
+title:  "C#-Online Game Data Synchronization-Modding in DuckGame"
+date:   2016-1-6 21:12:56 +1030
+categories: Modding
+tags: [CSharp, Modding]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+  Sound effect is easy to implement in local environment by:
+  {% highlight C# %}
+     SFX.Play("quackYell03", 1f, Rando.Float(-0.1f, 0.1f), 0f, false);
+  {% endhighlight %}
+  when it comes to online game, things get a little bit more tricky, but as long as you follow this template, it is
+  as quacking easy as before!<br>
+  Add these codes here:
+  {% highlight C# %}
+  [EditorGroup("DuckGame+|guns")]
+  public class Pokeball : Gun
+  {
+    ...
+    public StateBinding _netQuackYell03Binding = new NetSoundBinding("_netQuackYell03");
+    public NetSoundEffect _netQuackYell03 = new NetSoundEffect(new string[]
+    {
+      "quackYell03"
+    });
+    ...
+    public Pokeball(float xval, float yval) : base(xval, yval)
+    ...
+  }
+    {% endhighlight %}
+    <strong>StateBinding</strong> is what DuckGame uses for synchronization of variables/status online<br>
+    DuckGame has several derived classes from <strong>StateBinding</strong> <br>
+    <table>
+  <tr><th>Variable & Sample Value</th><th>Support binding type</th></tr>
+  <tr><td>{% highlight C# %}public StateBinding _fireWaitBinding = new StateBinding("_fireWait", -1, false);{% endhighlight %}</td><td>Basic class of StateBinding. Recommended Usage: {% highlight C# %}float/int{% endhighlight %}</td></tr>
+  <tr><td>{% highlight C# %}
+public StateBinding _bananaStateBinding = new StateFlagBinding(new string[]
+{
+  "_pin",
+  "_thrown"
+});
+  ...
+public bool _pin = true;
+public bool _thrown;
+    {% endhighlight %}</td><td>{% highlight C# %}bool{% endhighlight %}, there is a convention that all the bool binding should be put into one StateBinding</td></tr>
+  <tr><td>{% highlight C# %}public StateBinding _positionBinding = new CompressedVec2Binding("position", 2147483647);{% endhighlight %}</td><td>{% highlight C# %}Vec2(x,y){% endhighlight %} 2147483647 is the default value for 2nd arg in convention </td></tr>
+  <tr><td>{% highlight C# %}public StateBinding _angleBinding = new CompressedFloatBinding("_angle", 0f, 8, true);{% endhighlight %}</td><td>float, but you can just use basic StateBinding</td></tr>
+  <tr><td>{% highlight C# %}
+public StateBinding _netPreachBinding = new NetSoundBinding("_netPreach");
+public StateBinding _netSingleBeepBinding = new NetSoundBinding("_netSingleBeep");
+...
+public NetSoundEffect _netPreach = new NetSoundEffect(new string[]
+{
+  "preach0",
+  "preach1",
+  "preach2",
+  "preach3",
+  "preach4",
+  "preach5"
+});
+public NetSoundEffect _netSingleBeep = new NetSoundEffect(new string[]
+{
+  "singleBeep"
+});
+{% endhighlight %}</td><td>{% highlight C# %}NetSoundEffect{% endhighlight %}</td></tr>
+</table>
+Then replace your former version:<br>
+{% highlight C# %}SFX.Play("quackYell03", 1f, Rando.Float(-0.1f, 0.1f), 0f, false);{% endhighlight %}
+into:<br>
+{% highlight C# %}
+if (Network.isActive)
+{
+  this._netQuackYell03.Play(1f, 0f);
+}
+else
+{
+  SFX.Play("quackYell03", 1f, Rando.Float(-0.1f, 0.1f), 0f, false);
+}
+  {% endhighlight %}
+ Now the quacking sound effect can work well when you play online with your duck friends!<br>
+	Reference
+  <em>decompiled C# code of DuckGame.exe</em>
+
+
+
+
+
+
+
+</body>
+</html>

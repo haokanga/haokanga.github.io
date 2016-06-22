@@ -1,0 +1,144 @@
+---
+layout: post
+title:  "C#-Three status of Duck-Modding in DuckGame"
+date:   2016-1-6 20:53:56 +1030
+categories: Modding
+tags: [CSharp, Modding]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+  There are 3 status of duck, not only the Duck object. They are: <strong>Duck, TrappedDuck, Ragdoll</strong>.<br>
+  Whenever your brand-new object needs to interact with ducks, remember to discuss all of these 3 conditions! Or the
+  cunning duck can press "faint(/trip/ragdoll)" to dodge your super mega death object!<br>
+  You can always finish your code by these 3 steps to cover these 3 Quacking duck type.<br>
+
+  <strong>Step 1:</strong><br>
+  Design the code for Duck object<br>
+  suppose i want to convert the duck in some area into immobilized and invisible.<br>
+{% highlight C# %}
+System.Collections.Generic.IEnumerable<Duck> enumerable = Level.CheckCircleAll<Duck>(this.position, 10f);
+using (System.Collections.Generic.IEnumerator<Duck> enumerator = enumerable.GetEnumerator())
+{
+  while (enumerator.MoveNext())
+  {
+    Duck current = enumerator.Current as Duck;
+    if (current != null)
+    {
+      current.immobilized = true;
+       current.visible = false;
+    }
+  }
+}
+{% endhighlight %}
+  <strong>Step 2:</strong><br>
+  Deal with Ragdoll--unragdoll it first to convert them as normal Duck<br>
+  Add this before the former codes.<br>
+  {% highlight C# %}
+System.Collections.Generic.IEnumerable<Ragdoll> enumerableRagdoll = Level.CheckCircleAll<Ragdoll>(this.position, 10f);
+using (System.Collections.Generic.IEnumerator<Ragdoll> enumeratorRagdoll = enumerableRagdoll.GetEnumerator())
+{
+  while (enumeratorRagdoll.MoveNext())
+  {
+    Ragdoll ragdoll = enumeratorRagdoll.Current as Ragdoll;
+    ragdoll.Unragdoll();
+  }
+}
+  {% endhighlight %}
+  <strong>Step 3:</strong><br>
+  Deal with TrappedDuck--use captureDuck<br>
+  TrappedDuck uses <strong>captureDuck</strong> to refer the normal Duck it belongs to.
+  Add this after the first part of codes.<br>
+  {% highlight C# %}
+System.Collections.Generic.IEnumerable<TrappedDuck> enumerableTrappedDuck = Level.CheckCircleAll<TrappedDuck>(this.position, 10f);
+using (System.Collections.Generic.IEnumerator<TrappedDuck> enumeratorTrappedDuck = enumerableTrappedDuck.GetEnumerator())
+{
+  while (enumeratorTrappedDuck.MoveNext())
+  {
+    TrappedDuck current = enumeratorTrappedDuck.Current as TrappedDuck;
+    if (current != null)
+    {
+      current.visible = false;
+      current.captureDuck.immobilized = true;
+      current.captureDuck.visible = false;
+    }
+  }
+}
+  {% endhighlight %}
+  btw, for Ragdoll, you can also use <strong>captureDuck</strong> to refer the normal Duck, while there is a small difference that
+  you need to notice:
+  {% highlight C# %}
+  ragdollPart.doll.captureDuck
+{% endhighlight %}
+  Warning: always check whether the ducks are alive!
+  {% highlight C# %}
+  //if Ragdoll, unragdoll it first
+  System.Collections.Generic.IEnumerable<Ragdoll> enumerableRagdoll = Level.CheckCircleAll<Ragdoll>(this.position, 10f);
+  using (System.Collections.Generic.IEnumerator<Ragdoll> enumeratorRagdoll = enumerableRagdoll.GetEnumerator())
+  {
+      while (enumeratorRagdoll.MoveNext())
+      {
+          Ragdoll ragdoll = enumeratorRagdoll.Current as Ragdoll;
+          if(!ragdoll.captureDuck.dead)
+          ragdoll.Unragdoll();
+
+      }
+  }
+  //radius of effect
+  System.Collections.Generic.IEnumerable<Duck> enumerable = Level.CheckCircleAll<Duck>(this.position, 10f);
+  using (System.Collections.Generic.IEnumerator<Duck> enumerator = enumerable.GetEnumerator())
+  {
+      while (enumerator.MoveNext())
+      {
+          Duck current = enumerator.Current as Duck;
+          if (current != null && !current.dead)
+          {
+              ...
+          }
+      }
+  }
+  System.Collections.Generic.IEnumerable<TrappedDuck> enumerableTrappedDuck = Level.CheckCircleAll<TrappedDuck>(this.position, 10f);
+  using (System.Collections.Generic.IEnumerator<TrappedDuck> enumeratorTrappedDuck = enumerableTrappedDuck.GetEnumerator())
+  {
+      while (enumeratorTrappedDuck.MoveNext())
+      {
+          TrappedDuck current = enumeratorTrappedDuck.Current as TrappedDuck;
+          if (current != null && !current.captureDuck.dead)
+          {
+              ...
+          }
+      }
+  }
+  {% endhighlight %}
+  <br>
+<!--
+  <strong>Sample code:</strong><br>
+  Quacking Pokeball!<br>
+  captures ducks (including ragdoll/trapped duck) into the ball when triggered like a grenade (you can still kill the ducks in pokeball as usual); <br>
+  after 2.5s, convert ducks you caught into your team;<br>
+  halo effect of conversion<br>
+
+{% highlight C# %}
+
+{% endhighlight %}
+<br>
+-->
+  Reference
+  <em>decompiled C# code of DuckGame.exe</em>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+--- 
+layout: post 
+title: "AWS-Head First AWS EC2" 
+date: 2016-4-18 9:50:56 +1030 
+categories: CloudComputing 
+tags: [CloudComputing] 
+---
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    
+    th,
+    td {
+        padding: 5px;
+    }
+    </style>
+</head>
+
+<body>
+   <h4>Launch your EC2 instance</h4>
+    <strong>Step 1: </strong>You need an AWS account first, follow <a href="https://www.youtube.com/watch?v=1ey0EDVjyeY&index=89&list=PLIGEVr8ox1oGsi-XcwSjudMi_uCPxGzSs">AWS Account Sign Up</a>.<br>
+    <strong>Step 2: </strong><a href="https://www.youtube.com/watch?v=EfnfcIqq_IU&index=88&list=PLIGEVr8ox1oGsi-XcwSjudMi_uCPxGzSs">AWS Basics</a> Pay attention to the credential issues!<br>
+    <strong>Step 3: </strong><a href="https://www.youtube.com/watch?v=t0Gg0Y1Gz6Q&index=87&list=PLIGEVr8ox1oGsi-XcwSjudMi_uCPxGzSs">EC2 instance Basics</a>
+     & </strong><a href="https://www.youtube.com/watch?v=z-NoOLk2U-g&list=PLIGEVr8ox1oGsi-XcwSjudMi_uCPxGzSs&index=86">Launching an EC2 Instance</a><br>
+    Pay attention to the rules of spot prices. You should use spot prices which can save your budget in most cases, however, in rare cases, spot instances might lead to disaster.<br>
+    You can always see the current bid price when you are creating your EC2/EMR.<br> 
+    Sometimes bid price in certain subnet can go unreasonably high, then there are two kinds of doom:<br>
+    <a href="https://cmudream.files.wordpress.com/2016/04/spotprice10dollar8x.png"><img class="alignnone size-full wp-image-61" src="https://cmudream.files.wordpress.com/2016/04/spotprice10dollar8x.png" alt="spotprice10dollar8x" width="806" height="595" /></a>
+    <strong>Case 1: </strong>You choose a high bid price and you keep suffering from incredibly high cost.
+    <strong>Case 2: </strong>You choose a relatively low bid price and you do prevent the high cost, however, your instances are turned off and everything is lost and it is not recoverable. If it happens in your live test during team project, :)
+    To conclude, setting a proper bid price value is art. Suppose the current bid price is $0.1, you can set $1 if you are confident that the bid price will remain stable(and you are lazy), or you can set $0.2 if you are more conservative.<br>
+    (Just based on my observation) us-east-1e are very unstable and us-east-1b can lose control now and then.<br>
+    For <strong>security group</strong>, you can create a security group which allows all traffic in / all traffic out (if you enjoy being lazy), and you will never need to worry about the port issue anymore (however, this is not a good choice in real world because your instance is open to world).
+    <a href="https://cmudream.files.wordpress.com/2016/04/allinallout.png"><img class="alignnone size-full wp-image-63" src="https://cmudream.files.wordpress.com/2016/04/allinallout.png" alt="allinallout.png" width="1007" height="551"/></a><br>    
+    <strong>Step 4: </strong><a href="https://www.youtube.com/watch?v=rFdlVkt7M6w&index=84&list=PLIGEVr8ox1oGsi-XcwSjudMi_uCPxGzSs">Connecting to an EC2 Instance</a><br>
+    Cheers!
+</body>
+
+</html>

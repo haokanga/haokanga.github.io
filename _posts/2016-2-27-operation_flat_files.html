@@ -1,0 +1,80 @@
+---
+layout: post
+title:  "Linux-Bash Operations on Flat Files"
+date:   2016-2-27 20:50:56 +1030
+categories: Linux
+tags: [Linux]
+---
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<h4>What we get: big data files in CSV format</h4>
+<h4>What we need to do: retrieve single/aggregation data via Bash Commands</h4>
+{%highlight bash%}
+# Count(*) with keyword
+grep 'KEYWORD' FILENAME | wc -l
+
+# Count(*) with keyword in certain column
+	# grep version
+cat FILENAME | cut -d "," -f COLUMN_INDEX | grep 'KEYWORD' | wc -l
+	# awk version
+awk 'BEGIN {FS = ","} {if ($COLUMN_INDEX ~ /KEYWORD_REGEX/) count+=1} END {print count}' FILENAME
+
+# SELECT AVG(COLUMN_NAME) FROM TALBE_NAME
+awk 'BEGIN {FS = ","} {count+=1; sum+=$COLUMN_INDEX} END {print sum/count}' FILENAME
+
+# MERGE TWO FILE based on the same column
+# sort (on 1st field)
+sort -t , -k 1,1 FILE_1 > SORTED_FILE_1	
+sort -t , -k 1,1 FILE_2 > SORTED_FILE_2
+	# -t , : ',' is the field separator
+	#-k 1,1 : character sort on 1st field
+	#-1 1   : 1st file, 1st field
+	#-2 1   : 2nd file, 1st field
+    
+# sort on 2nd field, then 1st field with default separator "\t"
+sort -k 2,2 -k 1,1 unsorted_output > output    
+# join
+join -t , -1 1 -2 1 SORTED_FILE_1 SORTED_FILE_2 > OUTPUTFILE
+
+# SELECT any NAME with MAX SUM(SALES) GROUP BY ID	
+	# sort (on ID_INDEX)
+sort -t , -k ID_INDEX,ID_INDEX OUTPUTFILE > SORTED_OUTPUTFILE
+	# find
+	awk 'BEGIN {FS = ","; MAX_SALES=0;}{if (id != $ID_INDEX){if (MAX_SALES < SALES){MAX_SALES = SALES; MAX_SALES_NAME = NAME;}id = $ID_INDEX; NAME=$NAME_INDEX; SALES=$SALES;}else{SALES+=$SALES;}}END{if (MAX_SALES < SALES){MAX_SALES = SALES; MAX_SALES_NAME = NAME;}print MAX_SALES_NAME;}' SORTED_OUTPUTFILE
+	#### READABLE STRUCTURE####
+	# awk '
+	# BEGIN {FS = ","; MAX_SALES=0;}
+	# {if (id != $ID_INDEX) // if the id has changed
+	# 	{if (MAX_SALES < SALES)
+	# 		{MAX_SALES = SALES; MAX_SALES_NAME = NAME;}
+	# 	id = $ID_INDEX; NAME=$NAME_INDEX; SALES=$SALES;} 
+	# else 
+	# 	{SALES+=$SALES;}}  
+	# END {
+	# 	if (MAX_SALES < SALES) // remember to check the last id!
+	# 		{MAX_SALES = SALES; MAX_SALES_NAME = NAME;}
+	# 	print MAX_SALES_NAME;}' SORTED_OUTPUTFILE 		
+
+
+
+{%endhighlight%}
+
+
+<h4>Reference</h4>
+
+
+</body>
+</html>
+

@@ -1,7 +1,7 @@
 /* TEAM */
                             
-Your title: Your name.                        
-Site: email, link to a contact form, etc.                         
+Your title: Marshall An.
+Site: http://haokanga.github.io/
 Twitter: your Twitter username.                        
 Location: City, Country.
 

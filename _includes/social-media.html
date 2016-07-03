@@ -1,0 +1,14 @@
+ <div class="container-fluid">
+     <span>{{ site.title }}</span>
+     <span><a href="mailto:{{ site.email }}">{{ site.email }}</a></span>
+     {% if site.github_username %}
+     <span>
+         {% include icon-github.html username=site.github_username %}
+     </span>
+     {% endif %}
+     {% if site.twitter_username %}
+     <span>
+         {% include icon-twitter.html username=site.twitter_username %}
+     </span>
+     {% endif %}
+ </div>

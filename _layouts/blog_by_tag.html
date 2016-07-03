@@ -14,7 +14,7 @@ layout: default
             </article>
             <section class="content">
                 <!--TAG MODULE: create a blog_by_tag layout-->
-                <h1>Tag: {{ page.tag }}<img src="/ico/apple-touch-icon.png"></h1>
+                <h1>Tag: {{ page.tag }}{% include favicon.html %}</h1>
             </section>
             {% if site.tags[page.tag] %}
                 <ul class="entries">

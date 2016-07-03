@@ -9,7 +9,7 @@ title: Marshall An's TechTalks
     <main class="container">
     	<div class="row-fluid">
     		<section class="content">
-    		  <h1>{{ site.title }}<img src="/ico/apple-touch-icon.png"></h1>
+    		  <h1>{{ site.title }}{% include favicon.html %}</h1>
     		</section>
     		<ul class="entries">
     		{% for post in paginator.posts %}

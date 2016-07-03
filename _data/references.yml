@@ -1,0 +1,18 @@
+
+- title: Java-Sort Map By Value Gracefully
+  page: mkyong - How to sort a Map in Java
+  href: http://www.mkyong.com/java/how-to-sort-a-map-in-java
+
+
+- title: Java-Sort Map By Value Gracefully
+  page: mkyong - How to sort a Map in Java
+  href: http://www.mkyong.com/java/how-to-sort-a-map-in-java
+
+
+- title: Java-Split String Faster Than String.split()
+  page:
+    - String[] split(String regex, int limit)</code> in <code>String.class</code>, Java 7
+    - Stack Overflow - Performance of StringTokenizer class vs. split method in Java
+  href:
+    -
+    - http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java

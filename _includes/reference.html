@@ -1,14 +1,13 @@
 <h4>Reference</h4>
-<!--
-<code>String[] split(String regex, int limit)</code> in <code>String.class</code>, Java 7<br>
-<a href="http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java"><em>Stack Overflow - Performance of StringTokenizer class vs. split method in Java</em></a>
--->
 {% for data_reference in site.data.references %}
     {% if data_reference.title == page.title %}
-        {% if data_reference.href %}
-            <a href="{{ data_reference.href }}"><em>{{ data_reference.page }}</em></a><br>
-        {% else %}
-            <span>{{ data_reference.page }}</span><br>
-        {% endif %}
+        {% for page in data_reference.page %}
+            {% assign index = forloop.index | minus:1 %}
+            {% if data_reference.href[index].size > 0 %}
+                <a href="{{ data_reference.href[index] }}"><em>{{ data_reference.page[index] }}</em></a><br>
+            {% else %}
+                <span>{{ data_reference.page[index] }}</span><br>
+            {% endif %}
+        {% endfor %}
     {% endif %}
 {% endfor %}

@@ -1,12 +1,130 @@
+- title: Python-Merge Sort
+  page:
+    - Intro_to_Java_Programming,_Comprehensive_Version_(10th_Edition)
+  href:
+    -
+
+    
+- title: Java-Quick Sort
+  page:
+    - Quicksort From Wikipedia, the free encyclopedia
+  href:
+    - https://en.wikipedia.org/wiki/Quicksort
+
+
+- title: Python-Merge Sort
+  page:
+    - Problem Solving with Algorithms and Data Structures
+  href:
+    - http://interactivepython.org/runestone/static/pythonds/SortSearch/TheMergeSort.html
+
+
+- title: C#-Head First Quack!-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+
+- title: C#-MyQuack Cookbook!-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+- title: C#-Charge Cannon-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+- title: C#-Online Game Data Synchronization-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+
+- title: C#-Three status of Duck-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+- title: C#-Keyboard Events-Modding in DuckGame
+  page:
+    - decompiled C# code of DuckGame.exe
+  href:
+    -
+
+
+- title: Java-Head First Regex
+  page:
+    - Java Regex - Tutorial
+    - Boundary Matchers
+  href:
+    - http://www.vogella.com/tutorials/JavaRegularExpressions/article.html
+    - https://docs.oracle.com/javase/tutorial/essential/regex/bounds.html
+
+- title: Java-HBase
+  page:
+    - Apache HBase (TM) Operational Management
+  href:
+    - http://hbase.apache.org/0.94/book/ops_mgt.html#importtsv
+
+
+- title: Java-JDBC+MySQL
+  page:
+    - Stack Overflow - MySQL database query LIMIT
+  href:
+    - http://stackoverflow.com/questions/10068100/mysql-database-query-limit-help-how-to-create-pages-if-number-of-rows-returne
+
+
+- title: Java-Multithreading with ReadWriteLock
+  page:
+    - JavaCodeGeeks - Java ReadWriteLock Example
+    - Java Doc - Interface ReadWriteLock
+  href:
+    - https://examples.javacodegeeks.com/core-java/util/concurrent/locks-concurrent/readwritelock/java-readwritelock-example/
+    - https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReadWriteLock.html
+
+- title: Node.js-FreeCodeCamp 400-hour BackEnd Challenge
+  page:
+    - FreeCodeCamp
+  href:
+    - http://www.freecodecamp.com/
+
+- title: Java-Head First MongoDB
+  page:
+    - The mongo Shell
+  href:
+    - https://docs.mongodb.org/manual/mongo/
+
+
+- title: OLAP-Performance Tuning in Hive, Impala & Redshift
+  page:
+    - Impala 1.2.4 documentation - Partitioning
+    - Impala 1.2.4 documentation - How Impala Works with Hadoop File Formats
+    - Impala 1.2.4 documentation - SQL Statements
+    - Impala SQL Language Elements
+    - |
+     AWS Documentation » Amazon Redshift » Developer Guide » Tutorial: Tuning Table Design » Step 3: Select Sort Keys
+    - |
+     AWS Documentation » Amazon Redshift » Developer Guide » Tutorial: Tuning Table Design » Step 4: Select Distribution Styles
+  href:
+    - http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_partitioning.html#partitioning
+    - http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_file_formats.html#file_formats
+    - http://www.cloudera.com/documentation/archive/impala/1-x/1-2-4/Installing-and-Using-Impala/ciiu_langref_sql.html?scroll=create_table_unique_1
+    - http://www.cloudera.com/documentation/archive/impala/1-x/1-0-1/Installing-and-Using-Impala/ciiu_langref_sql.html#hints_unique_1
+    - http://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables-sort-keys.html
+    - http://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables-distribution.html
+
 
 - title: Java-Sort Map By Value Gracefully
-  page: mkyong - How to sort a Map in Java
-  href: http://www.mkyong.com/java/how-to-sort-a-map-in-java
-
-
-- title: Java-Sort Map By Value Gracefully
-  page: mkyong - How to sort a Map in Java
-  href: http://www.mkyong.com/java/how-to-sort-a-map-in-java
+  page:
+    - mkyong - How to sort a Map in Java
+  href:
+    - http://www.mkyong.com/java/how-to-sort-a-map-in-java
 
 
 - title: Java-Split String Faster Than String.split()

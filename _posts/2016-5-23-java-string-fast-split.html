@@ -11,13 +11,13 @@ tags: [Java]
     <p>In our programming life, we always need to split strings with delimiters. <code>String.split(String regex)</code> is the most intuitive choice and it is sweet when we use regex based split, e.g.<code>.split("\\s+")</code> , but should we always use it regardless of scenarios? I'm afraid not. <code>String.split(String regex)</code> can be bad especially when performance matters. e.g. when you build a high-performance server or running EMR jobs.</p> We can note that String.split receives a <code>regex</code> argument but we may just need a <code>char</code> as the delimiter.
     <p>There are many arguments on the internet about this topic (e.g. <a href="http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java">Stack Overflow - Performance of StringTokenizer class vs. split method in Java</a>), and many programmers prove that <code>String.split()</code> is more flexible thus but efficient than <code>StringTokenizer</code>.
     <code>StringTokenizer</code> is faster than <code>String.split()</code>, but it is not convenient to retrieve the splited result:
-    {%highlight java%}
+        {%highlight java%}
 // snippet in word count EMR sample
 while (stringTokenizer.hasMoreTokens()) {
         String word = stringTokenizer.nextToken();
         System.out.println(word + "\t" + "1");
     }
-    {%endhighlight%}
+        {%endhighlight%}
     <h4>Implementation</h4>
     But there is still hope, <code>indexOf</code> is even faster than <code>StringTokenizer</code> since it is more strict.</p> Be cautious to design your split function, why not explore the implementation of <code>String.split(String regex)</code> and learn from it?
     {%highlight java%}

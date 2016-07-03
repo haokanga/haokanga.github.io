@@ -1,6 +1,7 @@
  <div class="container-fluid">
-     <span>{{ site.title }}</span>
-     <span><a href="mailto:{{ site.email }}">{{ site.email }}</a></span>
+     <span>{{ site.title }}&nbsp;</span>
+     <span class="icon-2x icon-envelope"></span>
+     <a href="mailto:{{ site.email }}">{{ site.email }}</a>&nbsp;
      {% if site.github_username %}
      <span>
          {% include icon-github.html username=site.github_username %}

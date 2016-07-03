@@ -1,3 +1,3 @@
+# robotstxt.org/
+
 User-agent: *
-Allow: /
-Sitemap: http://haokanga.github.io/sitemap.xml

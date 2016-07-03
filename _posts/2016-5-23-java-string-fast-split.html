@@ -1,5 +1,5 @@
 --- 
-layout: post 
+layout: post_page
 title: "Java-Split String Faster Than String.split()" 
 date: 2016-5-23 18:50:56 +1030 
 categories: Java 
@@ -11,7 +11,10 @@ tags: [Java]
 <head>
 </head>
 
-<body>    
+<body>
+
+    <h4>Hack Java core code to simplify your life.</h4>
+    <!--summary break-->
     <h4>Introduction</h4>
     <p>In our programming life, we always need to split strings with delimiters. <code>String.split(String regex)</code> is the most intuitive choice and it is sweet when we use regex based split, e.g.<code>.split("\\s+")</code> , but should we always use it regardless of scenarios? I'm afraid not. <code>String.split(String regex)</code> can be bad especially when performance matters. e.g. when you build a high-performance server or running EMR jobs.</p> We can note that String.split receives a <code>regex</code> argument but we may just need a <code>char</code> as the delimiter.
     <p>There are many arguments on the internet about this topic (e.g. <a href="http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java">Stack Overflow - Performance of StringTokenizer class vs. split method in Java</a>), and many programmers prove that <code>String.split()</code> is more flexible thus but efficient than <code>StringTokenizer</code>.

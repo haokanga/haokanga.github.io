@@ -26,3 +26,15 @@ exclude: ["Gemfile", "Gemfile.lock", "README.md", 'sass', 'watch.sh', 'style.scs
 gems: [jekyll-paginate]
 paginate: 10
 paginate_path: "page:num"
+
+# Build settings
+markdown: kramdown
+highlighter: pygments
+excerpt_separator: ""
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "default"
+      author: "Marshall An"

@@ -1,16 +1,43 @@
 ---
 layout: default
 ---
-<!--TAG MODULE: create a blog_by_tag layout-->
-<h1>Articles by tag: {{ page.tag }}</h1>
-<div>
-    {% if site.tags[page.tag] %}
-	<ul>
-        {% for post in site.tags[page.tag] %}
-            <li><a href="{{ post.url }}">{{ post.title }}</a></li><br>
-        {% endfor %}
-    </ul>
-	{% else %}
-        <p>There are no posts for this tag.</p>
-    {% endif %}
+<!-- Content
+    ================================================== -->
+<div class="top-strip"></div>
+<div class="content">
+    <main class="container">
+        <div class="row-fluid">
+            <article class="home-icon">
+                <a href="/">
+                    <i class="icon-home"></i>
+                </a>
+            </article>
+            <section class="content">
+                <!--TAG MODULE: create a blog_by_tag layout-->
+                <h1>Tag: {{ page.tag }}<img src="/ico/apple-touch-icon.png"></h1>
+            </section>
+            {% if site.tags[page.tag] %}
+                <ul class="entries">
+                    {% for post in site.tags[page.tag] %}
+                    <li>
+                        <a href="{{ post.url }}">
+                            <span>{{ post.date | date: "%d %B %Y" }}</span>
+                            <h3>{{ post.title }}</h3>
+                            <div>{% assign splits = post.content | split:'<!--summary break-->'  %}
+                                {% if splits.size >= 2 %}
+                                {% assign index = splits.size | minus:2  %}
+                                {{ splits[index] }}
+                                {% endif %}
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <ul class="entries">
+                <li>There are no posts for this tag.</li>
+            </ul>
+            {% endif %}
+        </div>
+    </main>
 </div>

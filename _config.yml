@@ -29,7 +29,7 @@ paginate_path: "page:num"
 
 # Build settings
 markdown: kramdown
-highlighter: pygments
+highlighter: rouge
 excerpt_separator: ""
 defaults:
   -

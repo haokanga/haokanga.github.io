@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Mainpage
+title: Marshall An's TechTalks
 ---
 <!-- Content
     ================================================== -->
@@ -9,7 +9,7 @@ title: Mainpage
     <main class="container">
     	<div class="row-fluid">
     		<section class="content">
-    		  <h1>Ipsum List</h1>
+    		  <h1>{{ site.title }}<img src="/ico/apple-touch-icon.png"></h1>
     		</section>
     		<ul class="entries">
     		{% for post in paginator.posts %}
@@ -17,7 +17,12 @@ title: Mainpage
     		    <a href="{{ post.url }}">
                       <span>{{ post.date | date: "%d %B %Y" }}</span>
     		        <h3>{{ post.title }}</h3>
-                      <div>{{ post.content| split:'<!--summary break-->' | first  }}</div>
+                      <div>{% assign splits = post.content | split:'<!--summary break-->'  %}
+                          {% if splits.size >= 2 %}
+                              {% assign index = splits.size | minus:2  %}
+                              {{ splits[index] }}
+                          {% endif %}
+                      </div>
     		    </a>
     		  </li>
     		{% endfor %}

@@ -1,3 +1,22 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+title: Marshall An's TechTalks
+author: Marshall An
+email: anhaokang1993@gmail.com
+description: > # this means to ignore newlines until "baseurl:"  Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+  Marshall An's TechTalks is based on
+  GitHub Pages + Jekyll
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "http://haokanga.github.io/" # the base hostname & protocol for your site
+#twitter_username: jekyllrb
+github_username:  haokanga
+
 # visit https://github.com/mojombo/jekyll/wiki/Configuration for more settings
 
 auto: true # automatically update your jekyll

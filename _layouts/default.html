@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8"/>
-		<title>{% if page.title %} {{ page.title }} {% endif %} - Vanilla Bean Creme</title>
+		<title>{% if page.title %} {{ page.title }} {% endif %}</title>
 		<!-- For responsive site
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		-->
@@ -19,11 +19,12 @@
 	      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	    <![endif]-->
 
-		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-		<link rel="shortcut icon" href="ico/favicon.png">	    
+		<link rel="apple-touch-icon" sizes="120x120" href="/ico/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/ico/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/ico/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/ico/manifest.json">
+		<link rel="mask-icon" href="/ico/safari-pinned-tab.svg" color="#5bbad5">
+		<meta name="theme-color" content="#ffffff">
 	</head>
 	<body>
 	<!-- Header
@@ -36,7 +37,8 @@
 
 	<footer>
 		<div class="container">
-			<a href="http://richbray.me/frap/">Frappuccino</a> | Copyright or profile stuff goes here
+			<b>Copyright Notice</b> © {{ site.author }} and {{ site.title }}, 2015-2016.
+			<a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/3.0/88x31.png" /></a><br>Every blog post in this site by {{ site.author }} is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.
 		</div>
 	</footer>
 

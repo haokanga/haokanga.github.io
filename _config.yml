@@ -10,7 +10,7 @@ title: Marshall An's TechTalks
 author: Marshall An
 email: anhaokang1993@gmail.com
 description: > # this means to ignore newlines until "baseurl:"  Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-  Marshall An's TechTalks is based on
+  Marshall An's TechTalks, based on
   GitHub Pages + Jekyll
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://haokanga.github.io/" # the base hostname & protocol for your site
@@ -19,8 +19,6 @@ github_username:  haokanga
 
 # visit https://github.com/mojombo/jekyll/wiki/Configuration for more settings
 
-auto: true # automatically update your jekyll
-server: true # runs a local server
 paginate: 10 # pagination basted on number of posts
 exclude: ["Gemfile", "Gemfile.lock", "README.md", 'sass', 'watch.sh', 'style.scss'] # files to exclude
 gems: [jekyll-paginate]

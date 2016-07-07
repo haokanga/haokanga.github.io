@@ -134,3 +134,21 @@
   href:
     -
     - http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java
+
+- title: Java-JIT compiler tuning
+  page:
+    - |
+      Java Performance: The Definitive Guide - O'Reilly Media
+    - Stack Overflow - Compiled vs. Interpreted Languages
+  href:
+    -
+    - http://stackoverflow.com/questions/3265357/compiled-vs-interpreted-languages
+
+- title: Performance Tuning-Premature Optimization
+  page:
+    - |
+      Java Performance: The Definitive Guide - O'Reilly Media
+    - Wikipedia - Amdahl's law
+  href:
+    -
+    - https://en.wikipedia.org/wiki/Amdahl%27s_law

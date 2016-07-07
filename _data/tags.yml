@@ -22,6 +22,8 @@
   name: Modding
 - slug: Node.js
   name: Node.js
+- slug: PerformanceTuning
+  name: Performance Tuning
 - slug: Python
   name: Python
 - slug: Regex

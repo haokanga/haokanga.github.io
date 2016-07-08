@@ -96,10 +96,9 @@ it can store the factorial object reference in a register.
 
 Escape analysis is the most sophisticated of the optimizations the compiler can perform and it can often introduce “bugs” into improperly synchronized code.
 
-#### `final` keyword
+#### "final" keyword
 
-It is a persistent rumor that `final` keyword can improve Java performance a lot, but it has not been true for many, many years (if it ever was). You should use the `final` keyword whenever it makes sense: for an immutable object or primitive value you don’t want to change, for parameters to certain inner classes, and so on. But the presence or absence of the final keyword will not affect the performance of an
-application.
+It is a persistent rumor that `final` keyword can improve Java performance a lot, but it has not been true for many, many years (if it ever was). You should use `final` whenever it makes sense: for an immutable object or primitive value you don’t want to change, for parameters to certain inner classes, and so on. But the presence or absence of the final keyword will not affect the performance of an application.
 
 #### Summary
 

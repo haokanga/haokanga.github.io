@@ -135,6 +135,16 @@
     -
     - http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java
 
+- title: Performance Tuning-Premature Optimization
+  page:
+    - |
+      Java Performance: The Definitive Guide - O'Reilly Media
+    - Wikipedia - Amdahl's law
+  href:
+    -
+    - https://en.wikipedia.org/wiki/Amdahl%27s_law
+
+
 - title: Java-JIT compiler tuning
   page:
     - |
@@ -144,11 +154,19 @@
     -
     - http://stackoverflow.com/questions/3265357/compiled-vs-interpreted-languages
 
-- title: Performance Tuning-Premature Optimization
+- title: Performance Tuning-The database is always the bottleneck
   page:
     - |
       Java Performance: The Definitive Guide - O'Reilly Media
-    - Wikipedia - Amdahl's law
   href:
     -
-    - https://en.wikipedia.org/wiki/Amdahl%27s_law
+
+- title: Jekyll-Syntax Highlighting for Jekyll
+  page:
+    - Syntax Highlighting for Jekyll by Wenli Zhang
+    - Improve Code Highlighting in a Jekyll-based Blog Site by Dmitri Moore
+    - GitHub Pages now faster and simpler with Jekyll 3.0
+  href:
+    - http://zhangwenli.com/blog/2014/02/10/syntax-highlighting-for-jekyll/
+    - https://demisx.github.io/jekyll/2014/01/13/improve-code-highlighting-in-jekyll.html
+    - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0

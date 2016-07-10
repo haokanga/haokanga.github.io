@@ -50,3 +50,20 @@ alert('Syntax Highlighting for Jekyll');
 
 Another alternative to using Jekyll's built-in highlighter is to use GitHub Gists. They are directly
 embeddable into your posts with <code>{% raw %}{% gist [gist_number] %}{% endraw %}</code> tag.
+
+##### Handle Liquid Exception: SSL_connect
+
+{% highlight bash %}
+Liquid Exception: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed in d:/workspace_php/runphp.github.io/_posts/ruby/2015-11-26-welcome-to-jekyll.md
+jekyll 3.0.1 | Error:  SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
+{% endhighlight %}
+
+Solution:
+
+* Download http://curl.haxx.se/ca/cacert.pem
+* Run the command to install pem
+{% highlight bash %}
+export SSL_CERT_FILE=c:/windows/cacert.pem
+{% endhighlight %}
+* Restart Jekyll
+

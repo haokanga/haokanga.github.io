@@ -1,5 +1,5 @@
 --- 
-layout: post_page
+layout: post
 title: "Performance Tuning-CPU Usage" 
 date: 2016-7-7 18:50:56 +1030 
 categories: PerformanceTuning 

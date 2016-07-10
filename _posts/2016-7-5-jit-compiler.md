@@ -1,8 +1,8 @@
 --- 
-layout: post_page
+layout: post
 title: "Java-JIT compiler tuning" 
 date: 2016-7-5 18:50:56 +1030 
-categories: Java PerformanceTuning 
+categories: PerformanceTuning
 tags: [Java, PerformanceTuning] 
 ---
 The simple choice here is to **use the server compiler with tiered compilation for virtually everything**, just make sure that the code cache is sized large enough.

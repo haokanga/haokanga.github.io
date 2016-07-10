@@ -1,5 +1,5 @@
 --- 
-layout: post_page
+layout: post
 title: "Performance Tuning-Premature Optimization" 
 date: 2016-7-4 18:50:56 +1030 
 categories: PerformanceTuning 

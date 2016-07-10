@@ -1,5 +1,5 @@
 --- 
-layout: post_page
+layout: post
 title: "Performance Tuning-The database is always the bottleneck" 
 date: 2016-7-6 18:50:56 +1030 
 categories: PerformanceTuning 

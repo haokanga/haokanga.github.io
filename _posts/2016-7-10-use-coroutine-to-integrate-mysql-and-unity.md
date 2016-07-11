@@ -15,13 +15,13 @@ The idea covered in this post is not confined in Unity games. It is suitable for
 
 ####  Task
 
-Suppose we have already developed **a Unity game** and everything works quite well, except the fact that you cannot store game data, each time you close the game, all the data gets lost. We also have a **XAMPP based website** where the game get embedded in. We want to make use of MySQL database of the XAMPP architecture. In this post, we will try to upload and retrieve highscore.
+We have a **XAMPP based website** where the game gets embedded in. We want to make use of MySQL database of the XAMPP architecture. Suppose we have already developed **a Unity game** and everything works quite well, but you cannot store game record permanently, all the data gets lost when you exit the game. In this post, we will integrate MySQL with Unity to upload and retrieve highscore.
 
 ####  Basic Logic
 
 Write PHP code to handle web request, one handler function to upload and another for retrieval.
     
-Use C# to let Unity send web request to php handler. 
+Use C# to let Unity send web request to php handler (and process the response if needed). 
 
 * **Upload highscore**: After one game played by the player, it will gather current in-game highscore and set them to server.
 * **Retrieve highscore**: When the player opens the game next time, the game will try to get highscore stored in database and override the default score record.
@@ -47,3 +47,18 @@ Use C# to let Unity send web request to php handler.
 {% endhighlight %}
 
 #### C# handler usage example
+Upload highscore:
+{% highlight C# %}
+/*  upload highscore to database, no need to process response */
+StartCoroutine(databaseHandler.updateScore(scoreArray));
+{% endhighlight %}
+
+Retrieve highscore:
+{% highlight C# %}
+/* retrieve highscore from database and process response */
+StartCoroutine(databaseHandler.getSavedScore((storedHSArray) =>
+{
+    //lambda function to process retrieved result and edit in-game values
+    processStoredHSArray(storedHSArray);
+}));
+{% endhighlight %}

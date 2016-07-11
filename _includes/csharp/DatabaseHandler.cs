@@ -22,7 +22,7 @@ class DatabaseHandler : MonoBehaviour
     {
         if (gameHandlerURL == null)
         {
-            gameHandlerURL = "http://localhost/" + gameHandlerPage + "?secretKey=" + secretKey;
+            gameHandlerURL = "http://localhost/" + gameHandlerPage;
         }
     }
 
@@ -31,32 +31,9 @@ class DatabaseHandler : MonoBehaviour
     }
 
     //use System.Action<?> to pseudo "return" result
-    public IEnumerator getStudentGameWeek(Action<Int32> week)
-    {
-        gameHandlerParameters = "&command=get_week&gameID=1";
-        string get_url = gameHandlerURL + gameHandlerParameters;
-        if (DEBUG_MODE)
-        {
-            Debug.Log("[INFO] get_url:\t" + get_url);
-        }
-        // Post the URL to the site and create a download object to get the result.
-        WWW retrieved_result = new WWW(get_url);
-        yield return retrieved_result; // Wait until the download is done
-
-        if (retrieved_result.error != null)
-        {
-            Debug.Log("[FAIL] There was an error retrieving score: " + retrieved_result.error);
-        }
-        else
-        {
-            week(Int32.Parse(retrieved_result.text));
-        }
-    }
-
-    //use System.Action<?> to pseudo "return" result
     public IEnumerator getSavedScore(Action<String[]> storedHSArray)
     {
-        gameHandlerParameters = "&command=retrieve&gameID=1";
+        gameHandlerParameters = "?secretKey=" + secretKey + "&command=retrieve&gameID=1";
         string get_url = gameHandlerURL + gameHandlerParameters;
         if (DEBUG_MODE)
         {
@@ -83,7 +60,7 @@ class DatabaseHandler : MonoBehaviour
 
     public IEnumerator updateScore(int[] scoreArray)
     {
-        gameHandlerParameters = "&command=upload&gameID=1";
+        gameHandlerParameters = "?secretKey=" + secretKey + "&command=upload&gameID=1";
 
         string scoreListSequence = "";
         foreach (int s in scoreArray)

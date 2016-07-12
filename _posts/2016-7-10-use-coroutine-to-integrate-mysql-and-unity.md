@@ -6,13 +6,8 @@ categories: CSharp
 tags: [CSharp]
 ---
 
-Unity + C# + PHP + MySQL to build web embedded Unity games with database support
+Unity + C# + PHP + MySQL to build web embedded Unity games with database. The idea covered in this post is not confined in Unity games. It is suitable for any web communication with **client** app and **server** database. 
 <!--summary break-->
-    
-#### Introduction
-
-The idea covered in this post is not confined in Unity games. It is suitable for any web communication with SQL database with the help of PHP (or any other server language).
-
 ####  Task
 
 We have a **XAMPP based website** where the game gets embedded in. We want to make use of MySQL database of the XAMPP architecture. Suppose we have already developed **a Unity game** and everything works quite well, but you cannot store game record permanently, all the data gets lost when you exit the game. In this post, we will integrate MySQL with Unity to upload and retrieve highscore.

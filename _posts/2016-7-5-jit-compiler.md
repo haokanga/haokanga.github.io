@@ -5,7 +5,7 @@ date: 2016-7-5 18:50:56 +1030
 categories: PerformanceTuning
 tags: [Java, PerformanceTuning] 
 ---
-The simple choice here is to **use the server compiler with tiered compilation for virtually everything**, just make sure that the code cache is sized large enough.
+JVM requires warm-up. First batches of requests made to Java application (especially web app) are often **substantially slower** than the average response time over the life of the process.
 <!--summary break-->
 
 #### Compiled language & Interpreted language

@@ -13,8 +13,10 @@ Handy links I found during my blog development.
 Please follow Jekyll official website first. I will keep updating it.
 
 [Another handy post](https://css-tricks.com/building-a-jekyll-site-part-1-of-3/)
-
-
+#### Runserver
+{%highlight bash%}
+bundle exec jekyll serve
+{%endhighlight%}
 #### Docs
 [Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links)
 

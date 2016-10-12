@@ -20,6 +20,8 @@
   name: Linux
 - slug: Modding
   name: Modding
+- slug: MySQL
+  name: MySQL
 - slug: Node.js
   name: Node.js
 - slug: PerformanceTuning

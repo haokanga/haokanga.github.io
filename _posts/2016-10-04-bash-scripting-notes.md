@@ -47,7 +47,12 @@ if ! grep -q "$sysenv" /etc/environment; then
 fi
 {%endhighlight%}
 
-####  Update environment variables
+#### Update environment variables
 {%highlight bash%}
 source /etc/environment
+{%endhighlight%}
+
+#### Get Readable Time with Timezone
+{%highlight bash%}
+TZ=":America/New_York" date
 {%endhighlight%}

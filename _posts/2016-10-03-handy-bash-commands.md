@@ -31,7 +31,9 @@ diff file1 file2
 
 #### Share EC2 instances
 edit authorized_keys and append the public key, then you can use corresponding private key to SSH in the instance
+{%highlight bash%}
 /home/<user>/.ssh/authorized_keys
+{%endhighlight%}
 
 #### Search for a matching command previously typed in BASH
 CTRL+R

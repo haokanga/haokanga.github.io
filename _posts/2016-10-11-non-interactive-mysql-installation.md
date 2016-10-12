@@ -28,7 +28,6 @@ apt-get -y install mysql-server
 {%highlight bash%}
 cp -r /path/to/my.cnf /etc/mysql/my.cnf
 rm -f /path/to/my.cnf
-mysql -e "CREATE DATABASE IF NOT EXISTS <db_name>"
 mysql -e "USE mysql; CREATE USER IF NOT EXISTS '$username'@'localhost' IDENTIFIED BY '$mysqlpwd'; GRANT ALL PRIVILEGES ON *.* TO '$username'@'localhost' IDENTIFIED BY '$mysqlpwd'; FLUSH PRIVILEGES;"
 {%endhighlight%}
 

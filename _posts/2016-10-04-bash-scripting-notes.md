@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Linux-Bash Scripting Notes"
-date:   2016-10-11 00:21:56 +1030
+date:   2016-10-04 00:21:56 +1030
 categories: Linux
 tags: [Linux]
 ---
@@ -30,7 +30,7 @@ fi
 declare -a arr=("file1" "file2" "file3")
 for i in "${arr[@]}"
 do
-	if [ -f /path/to/"$i" ]
+    if [ -f /path/to/"$i" ]
 	then
 		echo "$i already exists"
 	fi
@@ -45,6 +45,9 @@ done
 if ! grep -q "$sysenv" /etc/environment; then
 	echo "$sysenv=$val" >> /etc/environment
 fi
-# Update environment variables
+{%endhighlight%}
+
+####  Update environment variables
+{%highlight bash%}
 source /etc/environment
 {%endhighlight%}

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Linux-Handy Bash Commands"
-date:   2016-10-11 00:21:56 +1030
+date:   2016-10-03 00:21:56 +1030
 categories: Linux
 tags: [Linux]
 ---

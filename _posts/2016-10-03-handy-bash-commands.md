@@ -14,7 +14,7 @@ Handy bash commands when I hang around EC2 instances.
 tar -cvzf <tar_name>.tgz entry1 entry2 entry3 ...
 {%endhighlight%}
 
-#### #xtract tar archives
+#### Extract tar archives
 {%highlight bash%}
 tar -xvf <tar_name>.tgz -C /path/to/destination/
 {%endhighlight%}

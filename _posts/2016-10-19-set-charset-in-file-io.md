@@ -43,6 +43,7 @@ It looks good, what's the problem here?
 If you run [Findbugs](http://findbugs.sourceforge.net/) upon this snippet, you will get this SEVERE warning:
 
 **Reliance on default encoding**
+
 Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.
 
 This bug can be easily ignored when you only run and test your code in your own development environment, in which the default encoding will be set to UTF-8. However, if the production environment has another default encoding, your code will be troublesome.
@@ -51,6 +52,7 @@ Here is the rule you must keep in mind:
 **ALWAYS set encoding in file I/O explicitly.**
 
 Here are some examples which handles Charset well:
+
 #### Examples with explicit Charset
 {%highlight java%}
     BufferedReader br = new BufferedReader(

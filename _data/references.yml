@@ -170,3 +170,16 @@
     - http://zhangwenli.com/blog/2014/02/10/syntax-highlighting-for-jekyll/
     - https://demisx.github.io/jekyll/2014/01/13/improve-code-highlighting-in-jekyll.html
     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+
+
+- title: Java Pitfalls-Modulo Of Negative Int
+  page:
+    - Java Puzzlers-Traps, Pitfalls, and Corner Cases By Joshua Bloch, Neal Gafter
+  href:
+    - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X
+
+- title: Java Pitfalls-Double Calculations
+  page:
+    - Java Puzzlers-Traps, Pitfalls, and Corner Cases By Joshua Bloch, Neal Gafter
+  href:
+    - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X

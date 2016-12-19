@@ -6,7 +6,7 @@ categories: Java
 tags: [Java]
 ---
 When the remainder operation (%) returns a nonzero result, it has the same sign as its left operand.
-Please note that % is not modulus.
+Please note that **% is not modulus** in Java.
 <!--summary break-->
 
 ### Naive solution

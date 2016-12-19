@@ -68,8 +68,14 @@ This was once the code in `java.util.Arrays`
 `int mid = (low + high) / 2;` fails if the sum of low and high is greater than the maximum positive int value (231 - 1). The sum overflows to a negative value, and the value stays negative when divided by two. In C this causes an array index out of bounds with unpredictable results. In Java, it throws ArrayIndexOutOfBoundsException.
 
 One way to fix the bug:
-`int mid = low + ((high - low) / 2);`
+`int mid = low + (high - low) / 2;`
 Probably faster, and arguably as clear is:
 
 `int mid = (low + high) >>> 1;`
 This one is also used in Java source code.
+
+`>>` is arithmetic shift right, `>>>` is logical shift right.
+
+In arithmetic shift right, the sign bit is extended to preserve the sign of the number.
+
+Logical shift right shifts a zero into the leftmost position.

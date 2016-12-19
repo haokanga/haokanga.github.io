@@ -65,10 +65,11 @@ This was once the code in `java.util.Arrays`
 16:         return -(low + 1);  // key not found.
 17:     }
 {% endhighlight %}
-`int mid = (low + high) / 2;` fails if the sum of low and high is greater than the maximum positive int value (231 - 1). The sum overflows to a negative value, and the value stays negative when divided by two. In C this causes an array index out of bounds with unpredictable results. In Java, it throws ArrayIndexOutOfBoundsException.
+`int mid = (low + high) / 2;` fails if the sum of low and high is greater than the maximum positive int value (2 ^ 31 - 1). The sum overflows to a negative value, and the value stays negative when divided by two. In C this causes an array index out of bounds with unpredictable results. In Java, it throws ArrayIndexOutOfBoundsException.
 
 One way to fix the bug:
 `int mid = low + (high - low) / 2;`
+
 Probably faster, and arguably as clear is:
 
 `int mid = (low + high) >>> 1;`

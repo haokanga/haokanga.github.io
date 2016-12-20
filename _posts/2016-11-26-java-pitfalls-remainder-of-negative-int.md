@@ -11,7 +11,7 @@ Please note that **% is not modulus** in Java.
 
 ### Naive solution
 
-{% highlight java%}
+{% highlight java %}
 public static boolean isOdd(int i) {
     return i % 2 == 1;
 }
@@ -32,6 +32,10 @@ When i is a negative odd number, i % 2 is equal to -1 rather than 1.
 -21 divided by 4 gives -5 with a remainder of -1.
 
 **In Python, % is modulus operator while Java uses remainder.**
+
+In Java, there is always:
+
+`(a / b) * b + (a % b) == a`
 
 ### Correct solution
 

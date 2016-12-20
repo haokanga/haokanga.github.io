@@ -191,3 +191,17 @@
   href:
     - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X
     - https://research.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html
+
+- title: Java Pitfalls-String Concatenation & Addition Operator
+  page:
+    - Java Puzzlers-Traps, Pitfalls, and Corner Cases By Joshua Bloch, Neal Gafter
+  href:
+    - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X
+
+- title: Java Pitfalls-String Equality & Interning
+  page:
+    - Java Puzzlers-Traps, Pitfalls, and Corner Cases By Joshua Bloch, Neal Gafter
+    - Java Techniques-String Equality and Interning  by Philip Isenhour
+  href:
+    - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X
+    - http://javatechniques.com/blog/string-equality-and-interning/

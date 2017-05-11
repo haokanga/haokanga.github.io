@@ -54,3 +54,9 @@ ps
 kill -KILL <PID>
 kill -9 <PID>
 {%endhighlight%}
+
+#### List jobs and kill job by id
+{%highlight bash%}
+jobs
+kill %1
+{%endhighlight%}

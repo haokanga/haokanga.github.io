@@ -5,7 +5,7 @@ date: 2017-7-4 14:50:56 -0500
 categories: Java
 tags: [Java]
 ---	
-> **TL;DR** The behavior of StringTokenizer can be different from String.split(regex, n). 
+> The behavior of StringTokenizer can be different from String.split(regex, n). 
 <!--summary break-->
 
 StringTokenizer is a legacy class that is retained for compatibility reasons although its use is discouraged in new code. It is recommended that anyone seeking this functionality use the split method of String or the java.util.regex package instead. 

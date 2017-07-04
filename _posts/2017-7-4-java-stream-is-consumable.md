@@ -1,7 +1,7 @@
 --- 
 layout: post
 title: "Java-Stream is consumable"
-date: 2017-5-11 14:50:56 -0500
+date: 2017-7-4 14:50:56 -0500
 categories: Java
 tags: [Java]
 ---	

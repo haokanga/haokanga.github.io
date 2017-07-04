@@ -205,3 +205,11 @@
   href:
     - https://www.amazon.com/Java-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X
     - http://javatechniques.com/blog/string-equality-and-interning/
+
+- title: Java-Stream is consumable
+  page:
+    - Java 8 Stream Tutorial by Benjamin Winterberg
+    - Stack Overflow - Copy a stream to avoid “stream has already been operated upon or closed” (java 8)
+  href:
+    - http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/
+    - https://stackoverflow.com/questions/23860533/copy-a-stream-to-avoid-stream-has-already-been-operated-upon-or-closed-java-8

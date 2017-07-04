@@ -39,3 +39,10 @@ streamSupplier.get().noneMatch(e -> true);
 {% endhighlight %}
 
 Each call to `get()` constructs a new stream.
+
+### Stream is not iterable
+
+Iterable implies reusability, whereas Stream is something that can only be used once.
+    
+If Stream extended Iterable then it will throw an Exception the second time when using `for (element : iterable)`.
+

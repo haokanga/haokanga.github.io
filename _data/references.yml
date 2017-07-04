@@ -210,6 +210,8 @@
   page:
     - Java 8 Stream Tutorial by Benjamin Winterberg
     - Stack Overflow - Copy a stream to avoid “stream has already been operated upon or closed” (java 8)
+    - Stack Overflow - Why does Stream<T> not implement Iterable<T>?
   href:
     - http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/
     - https://stackoverflow.com/questions/23860533/copy-a-stream-to-avoid-stream-has-already-been-operated-upon-or-closed-java-8
+    - https://stackoverflow.com/questions/20129762/why-does-streamt-not-implement-iterablet

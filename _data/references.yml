@@ -218,6 +218,18 @@
 
 - title: Java-Merge maps using Java streams
   page:
-    - Preslav Rachev - Merging Multiple Maps Using Java 8 Streams
+    - Merging Multiple Maps Using Java 8 Streams by Preslav Rachev
   href:
     - https://coderwall.com/p/oflatw/merging-multiple-maps-using-java-8-streams
+
+- title: Java-Singleton Pattern
+  page:
+    - Java Concurrency. In Practice. by Brian Göetz. Tim Peierls. Joshua Bloch. Joseph Bowbeer. David Holmes. Doug Lea.
+    - JournalDev - Java Singleton Design Pattern Best Practices with Examples by Pankaj
+    - Wikipedia - Singleton Pattern
+    - Wikipedia - Initialization-on-demand holder idiom
+  href:
+    - http://jcip.net/
+    - http://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples
+    - https://en.wikipedia.org/wiki/Singleton_pattern
+    - https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom

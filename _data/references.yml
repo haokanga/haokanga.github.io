@@ -238,3 +238,9 @@
     - "Flaw: Brittle Global State & Singletons"
   href:
     - http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/
+
+- title: Java-Dependency Injection with Spring Framework
+  page:
+    - Java Brains - Spring Framework
+  href:
+    - https://www.youtube.com/playlist?list=PLC97BDEFDCDD169D7

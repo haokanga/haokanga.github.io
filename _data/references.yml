@@ -57,15 +57,6 @@
   href:
     -
 
-
-- title: Java-Head First Regex
-  page:
-    - Java Regex - Tutorial
-    - Boundary Matchers
-  href:
-    - http://www.vogella.com/tutorials/JavaRegularExpressions/article.html
-    - https://docs.oracle.com/javase/tutorial/essential/regex/bounds.html
-
 - title: Java-HBase
   page:
     - Apache HBase (TM) Operational Management
@@ -233,3 +224,17 @@
     - http://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples
     - https://en.wikipedia.org/wiki/Singleton_pattern
     - https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
+
+- title: Java-Dependency Injection
+  page:
+    - Using dependency injection in Java, Lars Vogel, vogella GmbH
+    - Wikipedia - Dependency Injection
+  href:
+    - http://www.vogella.com/tutorials/DependencyInjection/article.html
+    - https://en.wikipedia.org/wiki/Dependency_injection
+
+- title: Java-Global State and Singletons
+  page:
+    - "Flaw: Brittle Global State & Singletons"
+  href:
+    - http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/

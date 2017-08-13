@@ -244,3 +244,9 @@
     - Java Brains - Spring Framework
   href:
     - https://www.youtube.com/playlist?list=PLC97BDEFDCDD169D7
+
+- title: Java-String Conversion of Null
+  page:
+    - Stack Overflow - Concatenating null strings in Java
+  href:
+    - https://stackoverflow.com/questions/4260723/concatenating-null-strings-in-java
